@@ -50,6 +50,8 @@ const sftpPut = (sftp, local, remote) =>
     sftp.fastPut(local, remote, (err) => (err ? rej(err) : res()));
   });
 
+conn.on('keyboard-interactive', (_name, _instr, _lang, _prompts, finish) => finish([password]));
+
 conn
   .on('ready', async () => {
     try {
@@ -87,8 +89,6 @@ conn
     process.exit(1);
   })
   .connect({ host, port: 22, username: user, password, readyTimeout: 30000, tryKeyboard: true });
-
-conn.on('keyboard-interactive', (_name, _instr, _lang, _prompts, finish) => finish([password]));
 
 // keep stdin readable so the process does not exit early on some Windows terminals
 void readFileSync;
