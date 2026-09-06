@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:#F7F8FA}
+:root,[data-th="light"]{--bg:#F7F8FA;--surface:#FFFFFF;--surface2:#F1F3F6;--well:#F7F8FA;--border:#E6E8EE;--border2:#D6DAE3;--text:#161B26;--muted:#5B6472;--faint:#6E7887;--accent:#5457E5;--accentHover:#4548D6;--accentFg:#FFFFFF;--accentInk:#4649D8;--accentSoft:#EDEEFD;--accentBorder:#D4D6FA;--ring:#8B8EF0;--ok:#0B7F58;--okBg:#E4F5ED;--okBd:#B9E5D1;--bad:#D63024;--badBg:#FDECEA;--badBd:#F6C5BF;--warn:#95610A;--warnBg:#FCF1DC;--warnBd:#EFD8A6;--na:#5B6472;--naBg:#EFF1F4;--naBd:#DBDFE6;--inputBg:#FFFFFF;--shadow:0 1px 2px rgba(18,24,40,.05);--shadowMd:0 4px 14px -4px rgba(18,24,40,.12);--shadowLg:0 22px 48px -12px rgba(18,24,40,.20);--scrim:rgba(15,19,28,.42)}
+[data-th="dark"]{--bg:#0B0F14;--surface:#111827;--surface2:#1B2434;--well:#0E141D;--border:#212B3C;--border2:#2E3A50;--text:#EAEEF5;--muted:#9AA4B6;--faint:#8791A3;--accent:#5E62EE;--accentHover:#7176F3;--accentFg:#FFFFFF;--accentInk:#A9ADFF;--accentSoft:#1F2347;--accentBorder:#383D74;--ring:#7A7EF3;--ok:#3ECF8E;--okBg:#0C2B1F;--okBd:#1D4E38;--bad:#F87168;--badBg:#331613;--badBd:#5D2823;--warn:#F5B14D;--warnBg:#2E2109;--warnBd:#574113;--na:#9AA4B6;--naBg:#1A2230;--naBd:#2E3A50;--inputBg:#0D1420;--shadow:0 0 0 1px rgba(255,255,255,.02);--shadowMd:0 6px 20px -6px rgba(0,0,0,.5);--shadowLg:0 26px 60px -14px rgba(0,0,0,.62);--scrim:rgba(3,6,12,.62)}
+[data-ac="emerald"]{--accent:#0A7D57;--accentHover:#086A49;--accentInk:#077053;--accentSoft:#E3F5EC;--accentBorder:#B9E4D0;--ring:#5FC4A0}
+[data-th="dark"][data-ac="emerald"]{--accent:#2FCE8F;--accentHover:#4BDA9F;--accentFg:#04281B;--accentInk:#52DEA2;--accentSoft:#0C2E21;--accentBorder:#1E5540;--ring:#2FCE8F}
+a{color:var(--accentInk);text-decoration:none}a:hover{text-decoration:underline}
+button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:8px;border:2px solid transparent;background-clip:content-box}::-webkit-scrollbar-track{background:transparent}
+[data-th] *{transition-property:background-color,border-color,color,fill,stroke,box-shadow;transition-duration:.16s;transition-timing-function:ease}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-420px 0}100%{background-position:420px 0}}
+@keyframes pop{0%{transform:scale(.6);opacity:.3}55%{transform:scale(1.14)}100%{transform:scale(1)}}
+@keyframes slideUp{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes slideIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes drawerIn{from{transform:translateX(70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{50%{opacity:.4}}
+</style>
+</helmet>
+<div data-th="{{ theme }}" data-ac="{{ accent }}" style="min-height:100vh;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif">
+<sc-if value="{{ isAuth }}"><div data-screen-label="Auth" style="min-height:100vh;display:grid;grid-template-columns:{{ authCols }}">
+<sc-if value="{{ authWide }}">
+<div style="background:#0D1120;color:#EAEEF5;display:flex;flex-direction:column;padding:44px 48px;position:relative;overflow:hidden">
+<div style="position:absolute;inset:0;background:radial-gradient(600px 400px at 20% 0%,rgba(94,98,238,.22),transparent 65%)"></div>
+<div style="display:flex;align-items:center;gap:10px;position:relative">
+<span style="width:32px;height:32px;border-radius:9px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z M9 12l2 2 4-4"></path></svg></span>
+<span style="font-weight:800;font-size:16.5px;letter-spacing:-0.3px">GMB Guard</span>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;max-width:430px">
+<h2 style="font-size:33px;font-weight:800;letter-spacing:-1px;line-height:1.15">Never lose a listing silently.</h2>
+<p style="font-size:14.5px;color:#9AA4B6;margin-top:12px;line-height:1.65">GMB Guard checks every Google Business Profile you manage, every day — and emails you the moment one is suspended, disappears, or comes back live.</p>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:26px">
+<div style="display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:11px 14px;backdrop-filter:blur(4px)">
+<span style="width:8px;height:8px;border-radius:50%;background:#F87168;flex:0 0 auto"></span>
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Magnolia Roofing Co. suspended</div><div style="font-size:11px;color:#8791A3">Alert emailed 40 seconds after detection</div></div>
+<span style="font-size:10.5px;color:#8791A3;flex:0 0 auto">09:00</span>
+</div>
+<div style="display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:11px 14px;backdrop-filter:blur(4px)">
+<span style="width:8px;height:8px;border-radius:50%;background:#3ECF8E;flex:0 0 auto"></span>
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Bright Smile Dental back live</div><div style="font-size:11px;color:#8791A3">Recovered after 6 days — client notified</div></div>
+<span style="font-size:10.5px;color:#8791A3;flex:0 0 auto">09:01</span>
+</div>
+</div>
+</div>
+<div style="font-size:12px;color:#8791A3;position:relative">Trusted by 300+ agencies · 512,000 profile checks a month</div>
+</div>
+</sc-if>
+<div style="display:flex;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg)">
+<div style="width:min(390px,100%)">
+<sc-if value="{{ authNarrow }}">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:26px;justify-content:center">
+<span style="width:30px;height:30px;border-radius:9px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accentFg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z M9 12l2 2 4-4"></path></svg></span>
+<span style="font-weight:800;font-size:16px;letter-spacing:-0.3px">GMB Guard</span>
+</div>
+</sc-if>
+<sc-if value="{{ isLogin }}">
+<div>
+<h1 style="font-size:23px;font-weight:800;letter-spacing:-0.5px">Welcome back</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:4px">Sign in to your GMB Guard workspace.</p>
+<button onClick="{{ googleBtn }}" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:20px;border:1px solid var(--border2);border-radius:10px;padding:10px;font-size:13px;font-weight:700;background:var(--surface)" style-hover="background:var(--surface2)">
+<svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.1h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.3-2.1 3.7-5.1 3.7-8.6z"></path><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.1-6.8-5.1l-3.9 3C3.3 21.2 7.3 24 12 24z"></path><path fill="#FBBC05" d="M5.2 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3l-3.9-3C.5 8.3 0 10.1 0 12s.5 3.7 1.3 5.3l3.9-3z"></path><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4L19 2.9C17.9 1.1 15.2 0 12 0 7.3 0 3.3 2.8 1.3 6.7l3.9 3c.9-3 3.6-5 6.8-5z"></path></svg>
+<span>Continue with Google</span>
+</button>
+<div style="display:flex;align-items:center;gap:12px;margin:18px 0"><span style="flex:1;height:1px;background:var(--border)"></span><span style="font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.5px">or</span><span style="flex:1;height:1px;background:var(--border)"></span></div>
+<label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Work email</label>
+<input value="{{ aEmail }}" onInput="{{ onAEmail }}" placeholder="you@agency.com" aria-label="Email" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ emailBd }};border-radius:10px;padding:10px 13px;font-size:13.5px;outline:none">
+<sc-if value="{{ errEmail }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ errEmail }}</div></sc-if>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:14px">Password</label>
+<div style="position:relative;margin-top:6px">
+<input type="{{ aPwType }}" value="{{ aPw }}" onInput="{{ onAPw }}" placeholder="••••••••" aria-label="Password" style="width:100%;background:var(--inputBg);border:1px solid {{ pwBd }};border-radius:10px;padding:10px 42px 10px 13px;font-size:13.5px;outline:none">
+<button onClick="{{ togglePw }}" aria-label="Toggle password visibility" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:7px;color:var(--faint);display:inline-flex;align-items:center;justify-content:center" style-hover="color:var(--text);background:var(--surface2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ aPwEye }}"></path></svg></button>
+</div>
+<sc-if value="{{ errPw }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ errPw }}</div></sc-if>
+<div style="display:flex;align-items:center;gap:8px;margin-top:14px">
+<button role="checkbox" aria-checked="{{ aRememberA }}" onClick="{{ toggleRemember }}" style="width:16px;height:16px;border-radius:5px;border:1.5px solid {{ cbBd }};background:{{ cbBg }};display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" style="opacity:{{ cbOp }}"><path d="M20 6 9 17l-5-5"></path></svg></button>
+<span style="flex:1;font-size:12.5px;color:var(--muted);font-weight:600">Remember me for 30 days</span>
+<button onClick="{{ goForgot }}" style="font-size:12.5px;font-weight:700;color:var(--accentInk);white-space:nowrap" style-hover="text-decoration:underline">Forgot password?</button>
+</div>
+<button onClick="{{ doLogin }}" style="width:100%;margin-top:18px;background:var(--accent);color:var(--accentFg);font-weight:800;font-size:13.5px;padding:11px;border-radius:10px;box-shadow:var(--shadowMd)" style-hover="background:var(--accentHover)">Sign in</button>
+<div style="font-size:12.5px;color:var(--muted);margin-top:18px;text-align:center">New to GMB Guard? <button onClick="{{ goSignup }}" style="font-weight:800;color:var(--accentInk);white-space:nowrap" style-hover="text-decoration:underline">Create a workspace</button></div>
+</div>
+</sc-if>
+<sc-if value="{{ isSignup }}">
+<div>
+<h1 style="font-size:23px;font-weight:800;letter-spacing:-0.5px">Create your workspace</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:4px">Free for 14 days · no card required · 2-minute setup.</p>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:20px">Full name</label>
+<input value="{{ aName }}" onInput="{{ onAName }}" placeholder="Sarah Mitchell" aria-label="Full name" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ nameBd }};border-radius:10px;padding:10px 13px;font-size:13.5px;outline:none">
+<sc-if value="{{ errName }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ errName }}</div></sc-if>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:14px">Work email</label>
+<input value="{{ aEmail }}" onInput="{{ onAEmail }}" placeholder="you@agency.com" aria-label="Email" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ emailBd }};border-radius:10px;padding:10px 13px;font-size:13.5px;outline:none">
+<sc-if value="{{ errEmail }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ errEmail }}</div></sc-if>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:14px">Password</label>
+<div style="position:relative;margin-top:6px">
+<input type="{{ aPwType }}" value="{{ aPw }}" onInput="{{ onAPw }}" placeholder="At least 8 characters" aria-label="Password" style="width:100%;background:var(--inputBg);border:1px solid {{ pwBd }};border-radius:10px;padding:10px 42px 10px 13px;font-size:13.5px;outline:none">
+<button onClick="{{ togglePw }}" aria-label="Toggle password visibility" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:7px;color:var(--faint);display:inline-flex;align-items:center;justify-content:center" style-hover="color:var(--text);background:var(--surface2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ aPwEye }}"></path></svg></button>
+</div>
+<div style="display:flex;gap:5px;margin-top:8px;align-items:center">
+<span style="flex:1;height:4px;border-radius:3px;background:{{ pw1 }}"></span>
+<span style="flex:1;height:4px;border-radius:3px;background:{{ pw2 }}"></span>
+<span style="flex:1;height:4px;border-radius:3px;background:{{ pw3 }}"></span>
+<span style="font-size:11px;font-weight:700;color:var(--faint);margin-left:6px">{{ pwHint }}</span>
+</div>
+<sc-if value="{{ errPw }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ errPw }}</div></sc-if>
+<button onClick="{{ doSignup }}" style="width:100%;margin-top:18px;background:var(--accent);color:var(--accentFg);font-weight:800;font-size:13.5px;padding:11px;border-radius:10px;box-shadow:var(--shadowMd)" style-hover="background:var(--accentHover)">Create workspace</button>
+<div style="font-size:11.5px;color:var(--faint);margin-top:10px;text-align:center;line-height:1.6">By continuing you agree to the Terms of Service and Privacy Policy.</div>
+<div style="font-size:12.5px;color:var(--muted);margin-top:14px;text-align:center">Already have an account? <button onClick="{{ goLogin }}" style="font-weight:800;color:var(--accentInk);white-space:nowrap" style-hover="text-decoration:underline">Sign in</button></div>
+</div>
+</sc-if>
+<sc-if value="{{ isForgot }}">
+<div>
+<sc-if value="{{ aNotSent }}">
+<div>
+<h1 style="font-size:23px;font-weight:800;letter-spacing:-0.5px">Reset your password</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:4px">Enter your email and we'll send a reset link.</p>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:20px">Work email</label>
+<input value="{{ aEmail }}" onInput="{{ onAEmail }}" placeholder="you@agency.com" aria-label="Email" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ emailBd }};border-radius:10px;padding:10px 13px;font-size:13.5px;outline:none">
+<sc-if value="{{ errEmail }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ errEmail }}</div></sc-if>
+<button onClick="{{ doForgot }}" style="width:100%;margin-top:18px;background:var(--accent);color:var(--accentFg);font-weight:800;font-size:13.5px;padding:11px;border-radius:10px;box-shadow:var(--shadowMd)" style-hover="background:var(--accentHover)">Send reset link</button>
+</div>
+</sc-if>
+<sc-if value="{{ aSent }}">
+<div style="text-align:center;padding:12px 0">
+<span style="width:52px;height:52px;border-radius:50%;background:var(--okBg);color:var(--ok);display:inline-flex;align-items:center;justify-content:center;animation:pop .5s ease"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M22 6l-10 7L2 6"></path></svg></span>
+<h1 style="font-size:20px;font-weight:800;letter-spacing:-0.4px;margin-top:14px">Check your inbox</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6">We sent a password reset link to<br><span style="font-weight:800;color:var(--text)">{{ aSentTo }}</span></p>
+</div>
+</sc-if>
+<div style="font-size:12.5px;color:var(--muted);margin-top:18px;text-align:center"><button onClick="{{ backToLogin }}" style="font-weight:800;color:var(--accentInk);white-space:nowrap" style-hover="text-decoration:underline">← Back to sign in</button></div>
+</div>
+</sc-if>
+</div>
+</div>
+</div></sc-if>
+<sc-if value="{{ inApp }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;height:100vh;min-width:0;overflow:hidden">
+<aside aria-label="Main navigation" style="width:{{ sideW }};flex:0 0 auto;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 10px 12px;gap:3px;height:100vh;transition:width .22s cubic-bezier(.2,.8,.3,1);overflow:hidden">
+<div style="display:flex;align-items:center;gap:10px;padding:4px 6px 16px">
+<span style="width:30px;height:30px;border-radius:9px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:var(--shadowMd)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accentFg)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z M9 12l2 2 4-4"></path></svg></span>
+<sc-if value="{{ sideLabels }}" hint-placeholder-val="{{ true }}"><span style="font-weight:800;font-size:15.5px;letter-spacing:-0.3px;white-space:nowrap">GMB Guard</span></sc-if>
+</div>
+<sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6">
+<button onClick="{{ n.go }}" title="{{ n.label }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;background:{{ n.bg }};color:{{ n.color }};font-weight:{{ n.fw }};font-size:13.5px;width:100%;text-align:left" style-hover="background:{{ n.hbg }};color:{{ n.hc }}">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="{{ n.d }}"></path></svg>
+<sc-if value="{{ sideLabels }}" hint-placeholder-val="{{ true }}"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.label }}</span></sc-if>
+</button>
+</sc-for>
+<div style="flex:1"></div>
+<sc-if value="{{ sideLabels }}">
+<div style="padding:10px 11px;border-radius:10px;background:var(--well);border:1px solid var(--border);margin-bottom:6px">
+<div style="display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--ok)"><span style="width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 2.4s infinite"></span><span>Monitoring active</span></div>
+<div style="font-size:11.5px;color:var(--muted);margin-top:3px">Next check {{ nextInShort }}</div>
+</div>
+</sc-if>
+<button onClick="{{ toggleSide }}" aria-label="Toggle sidebar" title="{{ sideT }}" style="display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:9px;color:var(--faint);font-size:12.5px;width:100%" style-hover="background:var(--surface2);color:var(--text)">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="{{ collapseIcon }}"></path></svg>
+<sc-if value="{{ sideLabels }}"><span style="white-space:nowrap">Collapse</span></sc-if>
+</button>
+</aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;height:100vh">
+<header style="height:58px;flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);position:relative;z-index:30">
+<button onClick="{{ openCmd }}" aria-label="Search — Command K" style="display:flex;align-items:center;gap:9px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 11px;color:var(--faint);font-size:13px;flex:0 1 400px;min-width:0;text-align:left" style-hover="border-color:var(--border2);color:var(--muted)">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3"></path></svg>
+<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Search listings, run actions…</span>
+<span style="font-size:10.5px;font-weight:700;border:1px solid var(--border2);border-radius:5px;padding:1px 5px;background:var(--surface);color:var(--muted);flex:0 0 auto">⌘K</span>
+</button>
+<div style="flex:1"></div>
+<sc-if value="{{ checking }}">
+<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 auto">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accentInk)" stroke-width="2.4" stroke-linecap="round" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.56"></path></svg>
+<span>{{ ckShort }}</span>
+</div>
+</sc-if>
+<button onClick="{{ startCheckAll }}" title="Check all listings (C)" style="white-space:nowrap;display:flex;align-items:center;gap:7px;background:var(--accent);color:var(--accentFg);font-weight:700;font-size:12.5px;padding:8px 13px;border-radius:9px;flex:0 0 auto" style-hover="background:var(--accentHover)">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+<span style="white-space:nowrap">Check all</span>
+</button>
+<button onClick="{{ toggleTheme }}" aria-label="Toggle color theme" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);position:relative;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);flex:0 0 auto" style-hover="background:var(--surface2);color:var(--text)">
+<span style="position:absolute;display:inline-flex;opacity:{{ sunOp }};transform:rotate({{ sunRot }});transition:opacity .25s,transform .4s"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2 M4.2 19.8l1.4-1.4 M18.4 5.6l1.4-1.4"></path></svg></span>
+<span style="position:absolute;display:inline-flex;opacity:{{ moonOp }};transform:rotate({{ moonRot }});transition:opacity .25s,transform .4s"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path></svg></span>
+</button>
+<div style="position:relative;flex:0 0 auto">
+<button onClick="{{ toggleBell }}" aria-label="Notifications" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);display:inline-flex;align-items:center;justify-content:center;color:var(--muted);position:relative" style-hover="background:var(--surface2);color:var(--text)">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9 M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<sc-if value="{{ unreadShow }}"><span style="position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:999px;background:var(--bad);color:#fff;font-size:9.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--surface)">{{ unreadN }}</span></sc-if>
+</button>
+<sc-if value="{{ bellOpen }}">
+<div role="menu" style="position:absolute;right:0;top:42px;width:330px;background:var(--surface);border:1px solid var(--border2);border-radius:13px;box-shadow:var(--shadowLg);z-index:50;animation:slideUp .18s ease;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border)">
+<span style="font-size:13px;font-weight:700">Notifications</span>
+<button onClick="{{ markRead }}" style="font-size:11.5px;font-weight:700;color:var(--accentInk);white-space:nowrap" style-hover="text-decoration:underline">Mark all read</button>
+</div>
+<sc-for list="{{ bellItems }}" as="bi" hint-placeholder-count="3">
+<button onClick="{{ bi.go }}" style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;width:100%;text-align:left;border-bottom:1px solid var(--border)" style-hover="background:var(--surface2)">
+<span style="width:8px;height:8px;border-radius:50%;background:{{ bi.dot }};margin-top:5px;flex:0 0 auto"></span>
+<span style="flex:1;min-width:0"><span style="display:block;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ bi.t }}</span><span style="font-size:11px;color:var(--faint)">{{ bi.when }}</span></span>
+<span style="width:7px;height:7px;border-radius:50%;background:{{ bi.unreadDot }};margin-top:5px;flex:0 0 auto"></span>
+</button>
+</sc-for>
+<button onClick="{{ goNotifSettings }}" style="width:100%;padding:10px;font-size:12px;font-weight:700;color:var(--accentInk);white-space:nowrap" style-hover="background:var(--surface2)">Notification settings →</button>
+</div>
+</sc-if>
+</div>
+<div style="position:relative;flex:0 0 auto">
+<button onClick="{{ toggleAv }}" aria-label="Account menu" style="display:inline-flex;align-items:center">
+<span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accentHover));color:var(--accentFg);font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;letter-spacing:.3px">{{ userInit }}</span>
+</button>
+<sc-if value="{{ avOpen }}">
+<div role="menu" style="position:absolute;right:0;top:42px;width:232px;background:var(--surface);border:1px solid var(--border2);border-radius:13px;box-shadow:var(--shadowLg);z-index:50;animation:slideUp .18s ease;overflow:hidden">
+<div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:13px;font-weight:700">{{ userName }}</div><div style="font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis">{{ userEmail }}</div></div>
+<button onClick="{{ goProfile }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:9px 13px;font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--muted)" style-hover="background:var(--surface2);color:var(--text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg><span>Profile settings</span></button>
+<button onClick="{{ goApiKeys }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:9px 13px;font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--muted)" style-hover="background:var(--surface2);color:var(--text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m3 3L21 8"></path></svg><span>API keys</span></button>
+<button onClick="{{ signOut }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:9px 13px;font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--bad);border-top:1px solid var(--border)" style-hover="background:var(--badBg)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"></path></svg><span>Sign out</span></button>
+</div>
+</sc-if>
+</div>
+</header>
+<main ref="{{ mainRef }}" style="flex:1;min-width:0;overflow-y:auto;overscroll-behavior:contain;position:relative">
+<sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}"><div data-screen-label="Dashboard" style="padding:24px 24px 80px;max-width:1320px;margin:0 auto">
+<div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+<div style="flex:1;min-width:220px">
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Overview</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">{{ todayLine }}</p>
+</div>
+<button onClick="{{ startCheckAll }}" style="white-space:nowrap;display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--accentFg);font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:10px;box-shadow:var(--shadowMd);flex:0 0 auto" style-hover="background:var(--accentHover)">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+<span>Check All Now</span>
+<span style="font-size:10.5px;font-weight:800;border:1px solid rgba(255,255,255,.35);border-radius:5px;padding:0 5px;opacity:.85">C</span>
+</button>
+</div>
+<sc-if value="{{ checking }}">
+<div style="background:var(--surface);border:1px solid var(--accentBorder);border-radius:14px;padding:15px 18px;margin-bottom:16px;box-shadow:var(--shadowMd);animation:slideUp .3s ease">
+<div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accentInk)" stroke-width="2.4" stroke-linecap="round" style="animation:spin 1s linear infinite;flex:0 0 auto"><path d="M21 12a9 9 0 1 1-6.2-8.56"></path></svg>
+<div style="flex:1;min-width:220px">
+<div style="font-size:13.5px;font-weight:700">Checking all listings… <span style="color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums">{{ ckCount }}</span></div>
+<div style="height:6px;border-radius:999px;background:var(--surface2);margin-top:9px;overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:{{ ckPct }};transition:width .1s linear"></div></div>
+</div>
+<button onClick="{{ cancelCheck }}" style="font-size:12.5px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;white-space:nowrap" style-hover="color:var(--bad);border-color:var(--badBd)">Cancel</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ dashSkel }}">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+<div style="height:118px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:118px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:118px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:118px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="grid-column:1/-1;height:280px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="grid-column:1/-1;height:220px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+</div>
+</sc-if>
+<sc-if value="{{ dashReady }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+<sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 16px 13px;box-shadow:var(--shadow);min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+<span style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.1px">{{ k.label }}</span>
+<span style="font-size:11px;font-weight:800;color:{{ k.dC }};background:{{ k.dBg }};padding:2px 7px;border-radius:999px;white-space:nowrap">{{ k.delta }}</span>
+</div>
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:11px">
+<span style="font-size:29px;font-weight:800;letter-spacing:-0.8px;line-height:1;font-variant-numeric:tabular-nums">{{ k.value }}</span>
+<svg width="96" height="30" viewBox="0 0 96 30" preserveAspectRatio="none" style="flex:0 0 auto;overflow:visible"><path d="{{ k.area }}" fill="{{ k.sparkFill }}"></path><path d="{{ k.line }}" fill="none" stroke="{{ k.sparkC }}" stroke-width="1.8" stroke-linejoin="round"></path></svg>
+</div>
+<div style="font-size:11.5px;color:var(--faint);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.sub }}</div>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:{{ dashCols }};gap:14px;margin-top:14px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px;min-width:0">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+<div><div style="font-size:14.5px;font-weight:700">Suspension trend</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Suspended listings per day · last 30 days</div></div>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--bad);background:var(--badBg);border:1px solid var(--badBd);border-radius:999px;padding:3px 10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--bad)"></span><span style="white-space:nowrap">{{ trendNow }} today</span></span>
+</div>
+<svg viewBox="0 0 640 170" preserveAspectRatio="none" style="width:100%;height:170px;display:block;margin-top:14px;overflow:visible">
+<line x1="0" x2="640" y1="128" y2="128" stroke="var(--border)" stroke-dasharray="3 5"></line>
+<line x1="0" x2="640" y1="86" y2="86" stroke="var(--border)" stroke-dasharray="3 5"></line>
+<line x1="0" x2="640" y1="44" y2="44" stroke="var(--border)" stroke-dasharray="3 5"></line>
+<line x1="0" x2="640" y1="169" y2="169" stroke="var(--border)"></line>
+<path d="{{ trendArea }}" fill="var(--badBg)" opacity="0.75"></path>
+<path d="{{ trendLine }}" fill="none" stroke="var(--bad)" stroke-width="2.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<circle cx="{{ trendCx }}" cy="{{ trendCy }}" r="4.5" fill="var(--bad)" stroke="var(--surface)" stroke-width="2"></circle>
+</svg>
+<div style="display:flex;justify-content:space-between;margin-top:8px">
+<sc-for list="{{ trendXL }}" as="x" hint-placeholder-count="5"><span style="font-size:11px;color:var(--faint)">{{ x }}</span></sc-for>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px;min-width:0">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+<div><div style="font-size:14.5px;font-weight:700">Recent status changes</div><div style="font-size:12px;color:var(--muted);margin-top:1px">From today's checks and manual scans</div></div>
+<button onClick="{{ goBiz }}" style="font-size:12.5px;font-weight:700;color:var(--accentInk);flex:0 0 auto" style-hover="text-decoration:underline">View all</button>
+</div>
+<div style="margin-top:6px">
+<sc-for list="{{ feed }}" as="f" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid var(--border)">
+<span style="width:28px;height:28px;border-radius:8px;background:var(--surface2);color:var(--muted);font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">{{ f.init }}</span>
+<div style="flex:1;min-width:0">
+<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</div>
+<div style="font-size:11.5px;color:var(--faint)">{{ f.city }} · {{ f.when }}</div>
+</div>
+<span style="font-size:11.5px;font-weight:600;color:var(--faint);white-space:nowrap">{{ f.fromL }}</span>
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M5 12h14 M12 5l7 7-7 7"></path></svg>
+<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ f.toBg }};border:1px solid {{ f.toBd }};color:{{ f.toC }};font-size:11.5px;font-weight:700;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:{{ f.toC }}"></span><span>{{ f.toL }}</span></span>
+<button onClick="{{ f.view }}" style="font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:7px;padding:4px 10px;flex:0 0 auto" style-hover="background:var(--surface2);color:var(--text)">View</button>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px">
+<div style="font-size:14.5px;font-weight:700">Status distribution</div>
+<div style="display:flex;align-items:center;gap:18px;margin-top:14px;flex-wrap:wrap">
+<div style="position:relative;width:130px;height:130px;flex:0 0 auto">
+<svg viewBox="0 0 130 130" style="width:130px;height:130px;transform:rotate(-90deg)">
+<circle cx="65" cy="65" r="54" fill="none" stroke="var(--surface2)" stroke-width="13"></circle>
+<sc-for list="{{ donutSegs }}" as="g" hint-placeholder-count="4">
+<circle cx="65" cy="65" r="54" fill="none" stroke="{{ g.color }}" stroke-width="13" stroke-dasharray="{{ g.dash }}" stroke-dashoffset="{{ g.off }}" stroke-linecap="butt"></circle>
+</sc-for>
+</svg>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<span style="font-size:21px;font-weight:800;letter-spacing:-0.5px">{{ donutPct }}</span>
+<span style="font-size:10.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.5px">Live</span>
+</div>
+</div>
+<div style="flex:1;min-width:130px;display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ legend }}" as="lg" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:8px;font-size:12.5px">
+<span style="width:8px;height:8px;border-radius:3px;background:{{ lg.c }};flex:0 0 auto"></span>
+<span style="flex:1;color:var(--muted);font-weight:600">{{ lg.l }}</span>
+<span style="font-weight:800;font-variant-numeric:tabular-nums">{{ lg.n }}</span>
+<span style="color:var(--faint);font-size:11.5px;width:44px;text-align:right;font-variant-numeric:tabular-nums">{{ lg.p }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px">
+<div style="display:flex;align-items:center;gap:8px">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3.5 2 M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"></path></svg>
+<span style="font-size:14.5px;font-weight:700">Next auto-check</span>
+</div>
+<div style="font-size:27px;font-weight:800;letter-spacing:-0.7px;margin-top:9px;font-variant-numeric:tabular-nums">in {{ nextIn }}</div>
+<div style="font-size:12px;color:var(--muted);margin-top:2px">Daily at {{ schedTimeL }} · {{ tzShort }}</div>
+<div style="height:5px;border-radius:999px;background:var(--surface2);margin-top:12px;overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:{{ dayPct }}"></div></div>
+<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+<button onClick="{{ startCheckAll }}" style="font-size:12px;font-weight:700;color:var(--accentInk);background:var(--accentSoft);border:1px solid var(--accentBorder);border-radius:8px;padding:6px 11px;white-space:nowrap" style-hover="background:var(--accentBorder)">Run now</button>
+<button onClick="{{ goSched }}" style="font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:6px 11px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Edit schedule</button>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px">
+<div style="font-size:14.5px;font-weight:700">Alerts</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:11px;font-size:12.5px;color:var(--muted)"><span style="width:7px;height:7px;border-radius:50%;background:var(--ok);flex:0 0 auto"></span><span style="flex:1">Email alerts on</span><span style="font-weight:700;color:var(--text)">{{ modeL }}</span></div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:var(--muted)"><span style="width:7px;height:7px;border-radius:50%;background:var(--accentInk);flex:0 0 auto"></span><span style="flex:1">{{ emailsN }}</span><button onClick="{{ goNotif }}" style="font-weight:700;color:var(--accentInk);font-size:12px" style-hover="text-decoration:underline">Manage</button></div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+</div></sc-if>
+<sc-if value="{{ isBiz }}"><div data-screen-label="Businesses" style="padding:24px 24px 80px;max-width:1440px;margin:0 auto">
+<div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+<div style="flex:1;min-width:200px">
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Businesses</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">{{ bizShown }} listings</p>
+</div>
+<button onClick="{{ openAdd }}" style="white-space:nowrap;display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:8px 13px" style-hover="background:var(--accentHover)">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14 M5 12h14"></path></svg><span>Add business</span></button>
+<button onClick="{{ goImport }}" style="white-space:nowrap;display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:8px 13px;background:var(--surface)" style-hover="background:var(--surface2);color:var(--text)">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M17 8l-5-5-5 5 M12 3v12"></path></svg><span>Import</span></button>
+<button onClick="{{ openExport }}" style="white-space:nowrap;display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:8px 13px;background:var(--surface)" style-hover="background:var(--surface2);color:var(--text)">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3"></path></svg><span>Export</span></button>
+</div>
+<div style="display:inline-flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:12px;flex-wrap:wrap">
+<sc-for list="{{ views }}" as="v" hint-placeholder-count="4">
+<button onClick="{{ v.go }}" style="font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;background:{{ v.bg }};color:{{ v.c }};box-shadow:{{ v.sh }};border:1px solid {{ v.bd }};white-space:nowrap">{{ v.l }}</button>
+</sc-for>
+<button onClick="{{ saveView }}" style="font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;color:var(--accentInk);white-space:nowrap" style-hover="background:var(--surface)">+ Save view</button>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)">
+<div style="display:flex;align-items:center;gap:9px;padding:12px 14px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
+<div style="position:relative;flex:1 1 220px;min-width:180px">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2" stroke-linecap="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%)"><path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3"></path></svg>
+<input value="{{ searchVal }}" onInput="{{ onSearch }}" placeholder="Search name, city, category…" aria-label="Search businesses" style="width:100%;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:8px 12px 8px 33px;font-size:13px;outline:none">
+</div>
+<sc-for list="{{ chips }}" as="ch" hint-placeholder-count="5">
+<button onClick="{{ ch.go }}" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;background:{{ ch.bg }};border:1px solid {{ ch.bd }};color:{{ ch.c }};white-space:nowrap" style-hover="border-color:var(--accentBorder)"><span>{{ ch.l }}</span><span style="font-variant-numeric:tabular-nums;opacity:.75">{{ ch.n }}</span></button>
+</sc-for>
+<select value="{{ fCity }}" onChange="{{ onCity }}" aria-label="Filter by city" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:7px 26px 7px 11px;font-size:12.5px;font-weight:600;color:var(--muted);background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 9px center">
+<option value="">All cities</option>
+<sc-for list="{{ cityOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+</select>
+<select value="{{ fCat }}" onChange="{{ onCat }}" aria-label="Filter by category" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:7px 26px 7px 11px;font-size:12.5px;font-weight:600;color:var(--muted);background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 9px center">
+<option value="">All categories</option>
+<sc-for list="{{ catOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+</select>
+<sc-if value="{{ hasFilters }}"><button onClick="{{ clearFilters }}" style="font-size:12px;font-weight:700;color:var(--accentInk);padding:6px 8px" style-hover="text-decoration:underline">Clear</button></sc-if>
+<div style="position:relative">
+<button onClick="{{ toggleCols }}" aria-label="Column visibility" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:7px 11px;background:var(--surface)" style-hover="background:var(--surface2);color:var(--text)">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18 M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path></svg><span>Columns</span></button>
+<sc-if value="{{ colsOpen }}">
+<div style="position:absolute;right:0;top:38px;width:190px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:var(--shadowLg);z-index:22;padding:6px;animation:slideUp .15s ease">
+<sc-for list="{{ colList }}" as="cl">
+<button onClick="{{ cl.go }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:7px 9px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted)" style-hover="background:var(--surface2);color:var(--text)">
+<span style="width:15px;height:15px;border-radius:4px;border:1.5px solid {{ cl.cbBd }};background:{{ cl.cbBg }};display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" style="opacity:{{ cl.cbOp }}"><path d="M20 6 9 17l-5-5"></path></svg></span>
+<span>{{ cl.l }}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+<sc-if value="{{ hasSel }}">
+<div style="display:flex;align-items:center;gap:9px;padding:9px 14px;background:var(--accentSoft);border-bottom:1px solid var(--accentBorder);flex-wrap:wrap;animation:slideUp .18s ease">
+<span style="font-size:12.5px;font-weight:800;color:var(--accentInk)">{{ selCount }} selected</span>
+<button onClick="{{ bulkCheck }}" style="font-size:12px;font-weight:700;color:var(--accentInk);border:1px solid var(--accentBorder);border-radius:8px;padding:5px 11px;background:var(--surface);white-space:nowrap" style-hover="background:var(--accentBorder)">Check selected</button>
+<button onClick="{{ bulkExport }}" style="font-size:12px;font-weight:700;color:var(--accentInk);border:1px solid var(--accentBorder);border-radius:8px;padding:5px 11px;background:var(--surface);white-space:nowrap" style-hover="background:var(--accentBorder)">Export</button>
+<button onClick="{{ bulkTag }}" style="font-size:12px;font-weight:700;color:var(--accentInk);border:1px solid var(--accentBorder);border-radius:8px;padding:5px 11px;background:var(--surface);white-space:nowrap" style-hover="background:var(--accentBorder)">Add tag</button>
+<button onClick="{{ bulkDel }}" style="font-size:12px;font-weight:700;color:var(--bad);border:1px solid var(--badBd);border-radius:8px;padding:5px 11px;background:var(--surface);white-space:nowrap" style-hover="background:var(--badBg)">Delete</button>
+<div style="flex:1"></div>
+<button onClick="{{ clearSel }}" aria-label="Clear selection" style="color:var(--accentInk)" style-hover="opacity:.7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18 M6 6l12 12"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{ bizSkel }}">
+<div style="padding:14px;display:flex;flex-direction:column;gap:10px">
+<div style="height:38px;border-radius:9px;background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:38px;border-radius:9px;background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:38px;border-radius:9px;background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:38px;border-radius:9px;background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:38px;border-radius:9px;background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+<div style="height:38px;border-radius:9px;background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 37%,var(--surface2) 63%);background-size:420px 100%;animation:shimmer 1.4s infinite"></div>
+</div>
+</sc-if>
+<sc-if value="{{ emptyFirst }}">
+<div style="padding:64px 24px;display:flex;flex-direction:column;align-items:center;text-align:center">
+<span style="width:52px;height:52px;border-radius:14px;background:var(--accentSoft);color:var(--accentInk);display:inline-flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M17 8l-5-5-5 5 M12 3v12"></path></svg></span>
+<div style="font-size:16px;font-weight:800;margin-top:14px">Import your businesses to get started</div>
+<div style="font-size:13px;color:var(--muted);margin-top:5px;max-width:380px">Upload an .xlsx or .csv of your Google Business Profiles and GMB Guard will start monitoring them within minutes.</div>
+<button onClick="{{ goImport }}" style="margin-top:16px;display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--accentFg);font-weight:700;font-size:13px;padding:9px 15px;border-radius:9px;white-space:nowrap" style-hover="background:var(--accentHover)">Import businesses</button>
+</div>
+</sc-if>
+<sc-if value="{{ emptyNone }}">
+<div style="padding:56px 24px;display:flex;flex-direction:column;align-items:center;text-align:center">
+<span style="width:48px;height:48px;border-radius:13px;background:var(--surface2);color:var(--faint);display:inline-flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3"></path></svg></span>
+<div style="font-size:15px;font-weight:800;margin-top:12px">No listings match</div>
+<div style="font-size:12.5px;color:var(--muted);margin-top:4px">Try a different search or clear the filters.</div>
+<button onClick="{{ clearFilters }}" style="margin-top:13px;font-size:12.5px;font-weight:700;color:var(--accentInk);border:1px solid var(--accentBorder);border-radius:8px;padding:7px 13px;background:var(--accentSoft);white-space:nowrap" style-hover="background:var(--accentBorder)">Clear filters</button>
+</div>
+</sc-if>
+<sc-if value="{{ bizReady }}">
+<div style="overflow-x:auto">
+<div style="min-width:{{ tableMinW }}">
+<sc-if value="{{ vwNotSm }}">
+<div>
+<div role="row" style="display:grid;grid-template-columns:{{ tableCols }};align-items:center;gap:12px;padding:9px 16px;position:sticky;top:0;background:var(--well);border-bottom:1px solid var(--border);z-index:10;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px">
+<button role="checkbox" aria-checked="{{ allSelA }}" aria-label="Select all on page" onClick="{{ toggleAll }}" style="width:17px;height:17px;border-radius:5px;border:1.5px solid {{ allCbBd }};background:{{ allCbBg }};display:inline-flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" style="opacity:{{ allCbOp }}"><path d="M20 6 9 17l-5-5"></path></svg></button>
+<button onClick="{{ sName.go }}" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:{{ sName.c }};text-transform:uppercase;letter-spacing:.5px;text-align:left" style-hover="color:var(--text)"><span>{{ sName.l }}</span><span>{{ sName.arrow }}</span></button>
+<sc-if value="{{ colCity }}"><button onClick="{{ sCity.go }}" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:{{ sCity.c }};text-transform:uppercase;letter-spacing:.5px" style-hover="color:var(--text)"><span>City</span><span>{{ sCity.arrow }}</span></button></sc-if>
+<sc-if value="{{ colCat }}"><span>Category</span></sc-if>
+<sc-if value="{{ colUrl }}"><span>URL</span></sc-if>
+<span>Status</span>
+<sc-if value="{{ colChecked }}"><button onClick="{{ sChecked.go }}" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:{{ sChecked.c }};text-transform:uppercase;letter-spacing:.5px" style-hover="color:var(--text)"><span>Checked</span><span>{{ sChecked.arrow }}</span></button></sc-if>
+<sc-if value="{{ colChanged }}"><button onClick="{{ sChanged.go }}" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:{{ sChanged.c }};text-transform:uppercase;letter-spacing:.5px" style-hover="color:var(--text)"><span>Changed</span><span>{{ sChanged.arrow }}</span></button></sc-if>
+<span></span>
+</div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+<div role="row" onClick="{{ r.open }}" style="display:grid;grid-template-columns:{{ tableCols }};align-items:center;gap:12px;padding:9px 16px;border-bottom:1px solid var(--border);cursor:pointer;background:{{ r.rowBg }};position:relative" style-hover="background:var(--surface2)">
+<button role="checkbox" aria-checked="{{ r.selA }}" aria-label="Select row" onClick="{{ r.toggleSel }}" style="width:17px;height:17px;border-radius:5px;border:1.5px solid {{ r.cbBd }};background:{{ r.cbBg }};display:inline-flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" style="opacity:{{ r.cbOp }}"><path d="M20 6 9 17l-5-5"></path></svg></button>
+<div style="min-width:0">
+<div style="display:flex;align-items:center;gap:7px;min-width:0"><span style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span><sc-if value="{{ r.tag }}"><span style="font-size:10px;font-weight:800;color:var(--accentInk);background:var(--accentSoft);border-radius:5px;padding:1px 6px;white-space:nowrap;flex:0 0 auto">{{ r.tag }}</span></sc-if></div>
+<div style="font-size:11.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.addr }}</div>
+</div>
+<sc-if value="{{ colCity }}"><span style="font-size:12.5px;color:var(--muted)">{{ r.city }}</span></sc-if>
+<sc-if value="{{ colCat }}"><span style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.cat }}</span></sc-if>
+<sc-if value="{{ colUrl }}"><a href="{{ r.url }}" target="_blank" rel="noreferrer" aria-label="Open Google profile" onClick="{{ r.stopClick }}" style="color:var(--faint);display:inline-flex" style-hover="color:var(--accentInk)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14 21 3"></path></svg></a></sc-if>
+<div>
+<sc-if value="{{ r.notBusy }}"><span role="status" aria-label="Status: {{ r.stL }}" style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;background:{{ r.stBg }};border:1px solid {{ r.stBd }};color:{{ r.stC }};font-size:11.5px;font-weight:700;white-space:nowrap;animation:{{ r.anim }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.stC }}"></span><span>{{ r.stL }}</span></span></sc-if>
+<sc-if value="{{ r.busy }}"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;background:var(--warnBg);border:1px solid var(--warnBd);color:var(--warn);font-size:11.5px;font-weight:700;white-space:nowrap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.56"></path></svg><span>Checking…</span></span></sc-if>
+</div>
+<sc-if value="{{ colChecked }}"><div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums"><span>{{ r.checked }}</span><button onClick="{{ r.check }}" aria-label="Check this listing now" title="Check now" style="color:var(--faint);display:inline-flex;animation:{{ r.spin }}" style-hover="color:var(--accentInk)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6 M20.5 13a8.5 8.5 0 1 1-2-7.3L23 10"></path></svg></button></div></sc-if>
+<sc-if value="{{ colChanged }}"><span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">{{ r.changed }}</span></sc-if>
+<div style="position:relative">
+<button onClick="{{ r.menuBtn }}" aria-label="Row actions" style="width:26px;height:26px;border-radius:7px;color:var(--faint);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--surface2);color:var(--text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v.01 M12 12v.01 M12 19v.01"></path></svg></button>
+<sc-if value="{{ r.menuOpen }}">
+<div style="position:absolute;right:0;top:30px;width:168px;background:var(--surface);border:1px solid var(--border2);border-radius:11px;box-shadow:var(--shadowLg);z-index:22;padding:5px;animation:slideUp .13s ease">
+<button onClick="{{ r.mCheck }}" style="display:block;width:100%;text-align:left;padding:7px 10px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Check now</button>
+<button onClick="{{ r.mHist }}" style="display:block;width:100%;text-align:left;padding:7px 10px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">View history</button>
+<button onClick="{{ r.mEditD }}" style="display:block;width:100%;text-align:left;padding:7px 10px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Edit details</button>
+<button onClick="{{ r.mEdit }}" style="display:block;width:100%;text-align:left;padding:7px 10px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Edit notes</button>
+<button onClick="{{ r.mDel }}" style="display:block;width:100%;text-align:left;padding:7px 10px;border-radius:7px;font-size:12.5px;font-weight:700;color:var(--bad);white-space:nowrap" style-hover="background:var(--badBg)">Delete</button>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ vwSm }}">
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+<button onClick="{{ r.open }}" style="display:flex;flex-direction:column;gap:7px;padding:13px 16px;border-bottom:1px solid var(--border);text-align:left;width:100%;background:{{ r.rowBg }}" style-hover="background:var(--surface2)">
+<div style="display:flex;align-items:center;gap:9px;width:100%">
+<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div><div style="font-size:11.5px;color:var(--faint)">{{ r.city }} · {{ r.cat }}</div></div>
+<sc-if value="{{ r.notBusy }}"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:999px;background:{{ r.stBg }};border:1px solid {{ r.stBd }};color:{{ r.stC }};font-size:11px;font-weight:700;flex:0 0 auto"><span style="width:5px;height:5px;border-radius:50%;background:{{ r.stC }}"></span><span>{{ r.stL }}</span></span></sc-if>
+<sc-if value="{{ r.busy }}"><span style="font-size:11px;font-weight:700;color:var(--warn);flex:0 0 auto">Checking…</span></sc-if>
+</div>
+<div style="font-size:11.5px;color:var(--muted)">Checked {{ r.checked }} · changed {{ r.changed }}</div>
+</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;flex-wrap:wrap">
+<span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">{{ pageInfo }}</span>
+<div style="flex:1"></div>
+<select value="{{ psVal }}" onChange="{{ onPs }}" aria-label="Rows per page" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:8px;padding:5px 24px 5px 9px;font-size:12px;font-weight:600;color:var(--muted);background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 8px center">
+<option value="25">25 / page</option><option value="50">50 / page</option><option value="100">100 / page</option>
+</select>
+<sc-if value="{{ canPrev }}"><button onClick="{{ prevPg }}" aria-label="Previous page" style="width:28px;height:28px;border-radius:8px;border:1px solid var(--border2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--surface2);color:var(--text)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button></sc-if>
+<sc-for list="{{ pages }}" as="pg">
+<sc-if value="{{ pg.n }}"><button onClick="{{ pg.go }}" style="min-width:28px;height:28px;border-radius:8px;background:{{ pg.bg }};color:{{ pg.c }};font-size:12px;font-weight:700;padding:0 6px;font-variant-numeric:tabular-nums" style-hover="border-color:var(--border2)">{{ pg.l }}</button></sc-if>
+<sc-if value="{{ pg.dots }}"><span style="color:var(--faint);font-size:12px;padding:0 2px">…</span></sc-if>
+</sc-for>
+<sc-if value="{{ canNext }}"><button onClick="{{ nextPg }}" aria-label="Next page" style="width:28px;height:28px;border-radius:8px;border:1px solid var(--border2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--surface2);color:var(--text)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></button></sc-if>
+</div>
+</sc-if>
+</div>
+</div></sc-if>
+<sc-if value="{{ isImport }}"><div data-screen-label="Import" style="padding:24px 24px 80px;max-width:860px;margin:0 auto">
+<button onClick="{{ backToBiz }}" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:14px;white-space:nowrap" style-hover="color:var(--text)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span>Back to businesses</span></button>
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Import businesses</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">Upload a spreadsheet of Google Business Profiles to monitor.</p>
+<div style="display:flex;align-items:center;gap:0;margin:20px 0 18px">
+<sc-for list="{{ impSteps }}" as="st">
+<div style="display:flex;align-items:center;flex:1;min-width:0">
+<span style="width:26px;height:26px;border-radius:50%;background:{{ st.bg }};color:{{ st.c }};font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">{{ st.n }}</span>
+<span style="font-size:12.5px;font-weight:{{ st.lw }};color:{{ st.lc }};margin:0 10px 0 8px;white-space:nowrap">{{ st.l }}</span>
+<span style="flex:1;height:2px;background:{{ st.ln }};border-radius:2px;min-width:12px"></span>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ impStep1 }}">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:20px">
+<div style="border:1.5px dashed var(--border2);border-radius:12px;padding:44px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;background:var(--well)">
+<span style="width:46px;height:46px;border-radius:13px;background:var(--accentSoft);color:var(--accentInk);display:inline-flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M17 8l-5-5-5 5 M12 3v12"></path></svg></span>
+<div style="font-size:14.5px;font-weight:800;margin-top:12px">Drag and drop your .xlsx or .csv here</div>
+<div style="font-size:12.5px;color:var(--muted);margin-top:3px">Up to 5,000 rows · we auto-detect your columns</div>
+<button onClick="{{ impNext2 }}" style="margin-top:14px;font-size:12.5px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:8px 15px;white-space:nowrap" style-hover="background:var(--accentHover)">Browse files</button>
+</div>
+<div style="display:flex;align-items:center;gap:11px;margin-top:14px;padding:12px 14px;border:1px solid var(--border);border-radius:11px;flex-wrap:wrap">
+<span style="width:34px;height:34px;border-radius:9px;background:var(--okBg);color:var(--ok);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z M14 2v6h6 M8 13h8 M8 17h8"></path></svg></span>
+<div style="flex:1;min-width:160px"><div style="font-size:13px;font-weight:700">Try it with the sample file</div><div style="font-size:11.5px;color:var(--faint)">agency-listings.xlsx · 512 rows</div></div>
+<button onClick="{{ impNext2 }}" style="font-size:12px;font-weight:700;color:var(--accentInk);background:var(--accentSoft);border:1px solid var(--accentBorder);border-radius:8px;padding:7px 12px;white-space:nowrap" style-hover="background:var(--accentBorder)">Use this file</button>
+</div>
+<button onClick="{{ dlTemplate }}" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--accentInk);margin-top:12px;white-space:nowrap" style-hover="text-decoration:underline"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3"></path></svg><span>Download sample template</span></button>
+</div>
+</sc-if>
+<sc-if value="{{ impStep2 }}">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:20px">
+<div style="font-size:14.5px;font-weight:700">Map your columns</div>
+<div style="font-size:12.5px;color:var(--muted);margin-top:2px">We matched 6 of 6 columns automatically — override anything that looks wrong.</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+<sc-for list="{{ impMapRows }}" as="m">
+<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;flex-wrap:wrap">
+<span style="font-size:12.5px;font-weight:700;font-family:'JetBrains Mono',monospace;flex:1;min-width:130px">{{ m.src }}</span>
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M5 12h14 M12 5l7 7-7 7"></path></svg>
+<select value="{{ m.val }}" onChange="{{ m.onSel }}" aria-label="Target field" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:8px;padding:6px 26px 6px 10px;font-size:12.5px;font-weight:600;min-width:150px;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 9px center">
+<sc-for list="{{ m.opts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+</select>
+<sc-if value="{{ m.auto }}"><span style="font-size:10px;font-weight:800;color:var(--ok);background:var(--okBg);border:1px solid var(--okBd);border-radius:5px;padding:2px 7px;text-transform:uppercase;letter-spacing:.4px">Auto</span></sc-if>
+</div>
+</sc-for>
+</div>
+<div style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:18px">Preview · first 5 rows</div>
+<div style="overflow-x:auto;margin-top:8px;border:1px solid var(--border);border-radius:10px">
+<div style="min-width:560px">
+<div style="display:grid;grid-template-columns:2fr 1.6fr 1fr 1fr;gap:10px;padding:8px 12px;background:var(--well);border-bottom:1px solid var(--border);font-size:10.5px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px"><span>Business name</span><span>Address</span><span>City</span><span>Category</span></div>
+<sc-for list="{{ impPreview }}" as="p">
+<div style="display:grid;grid-template-columns:2fr 1.6fr 1fr 1fr;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px"><span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.a }}</span><span style="color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.b }}</span><span style="color:var(--muted)">{{ p.c }}</span><span style="color:var(--muted)">{{ p.d }}</span></div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:18px">
+<button onClick="{{ impBack1 }}" style="font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:9px 14px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Back</button>
+<button onClick="{{ impNext3 }}" style="font-size:13px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:9px 16px;white-space:nowrap" style-hover="background:var(--accentHover)">Continue to validation</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ impStep3 }}">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:20px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+<div style="border:1px solid var(--okBd);background:var(--okBg);border-radius:11px;padding:13px 14px"><div style="font-size:23px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums">{{ impValid }}</div><div style="font-size:12px;font-weight:700;color:var(--ok);margin-top:1px">Valid rows</div></div>
+<div style="border:1px solid var(--warnBd);background:var(--warnBg);border-radius:11px;padding:13px 14px"><div style="font-size:23px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums">{{ impDup }}</div><div style="font-size:12px;font-weight:700;color:var(--warn);margin-top:1px">Duplicates · skipped</div></div>
+<div style="border:1px solid var(--badBd);background:var(--badBg);border-radius:11px;padding:13px 14px"><div style="font-size:23px;font-weight:800;color:var(--bad);font-variant-numeric:tabular-nums">{{ impErr }}</div><div style="font-size:12px;font-weight:700;color:var(--bad);margin-top:1px">Errors to fix</div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px">
+<div style="font-size:13px;font-weight:700">Fixable errors</div>
+<button onClick="{{ impFixAll }}" style="font-size:12px;font-weight:700;color:var(--accentInk);white-space:nowrap" style-hover="text-decoration:underline">Fix all automatically</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px;margin-top:9px">
+<sc-for list="{{ impErrRows }}" as="er">
+<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;flex-wrap:wrap">
+<span style="font-size:11px;font-weight:800;color:var(--faint);font-family:'JetBrains Mono',monospace;width:58px">{{ er.row }}</span>
+<div style="flex:1;min-width:180px"><div style="font-size:12.5px;font-weight:700">{{ er.field }} — {{ er.issue }}</div><div style="font-size:11.5px;color:var(--faint)">{{ er.fix }}</div></div>
+<button onClick="{{ er.doFix }}" style="font-size:11.5px;font-weight:800;color:{{ er.fixC }};background:{{ er.fixBg }};border:1px solid {{ er.fixBd }};border-radius:7px;padding:5px 12px">{{ er.fixL }}</button>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:18px">
+<button onClick="{{ impBack2 }}" style="font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:9px 14px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Back</button>
+<button onClick="{{ impRun }}" style="font-size:13px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:9px 16px;white-space:nowrap" style-hover="background:var(--accentHover)">{{ impLabel }}</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ impStep4 }}">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:20px">
+<sc-if value="{{ impRunning }}">
+<div style="display:flex;flex-direction:column;align-items:center;padding:36px 16px;text-align:center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accentInk)" stroke-width="2.4" stroke-linecap="round" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.56"></path></svg>
+<div style="font-size:15px;font-weight:800;margin-top:14px">Importing your listings…</div>
+<div style="font-size:12.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums">{{ impProgN }} rows</div>
+<div style="width:min(360px,100%);height:7px;border-radius:999px;background:var(--surface2);margin-top:16px;overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--accent);width:{{ impProgPct }};transition:width .1s linear"></div></div>
+</div>
+</sc-if>
+<sc-if value="{{ impDoneP }}">
+<div style="display:flex;flex-direction:column;align-items:center;padding:32px 16px;text-align:center">
+<span style="width:52px;height:52px;border-radius:50%;background:var(--okBg);color:var(--ok);display:inline-flex;align-items:center;justify-content:center;animation:pop .5s ease"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span>
+<div style="font-size:17px;font-weight:800;margin-top:14px">{{ impValidDone }} listings imported</div>
+<div style="font-size:12.5px;color:var(--muted);margin-top:4px">{{ impDup }} duplicates were skipped. First status check starts now — results within ~4 minutes.</div>
+<div style="display:flex;gap:9px;margin-top:18px;flex-wrap:wrap;justify-content:center">
+<button onClick="{{ impGoBiz }}" style="font-size:13px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:9px 16px;white-space:nowrap" style-hover="background:var(--accentHover)">View businesses</button>
+<button onClick="{{ impAgain }}" style="font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:9px 14px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Import another file</button>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div></sc-if>
+<sc-if value="{{ isReports }}"><div data-screen-label="Reports" style="padding:24px 24px 80px;max-width:1320px;margin:0 auto">
+<div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+<div style="flex:1;min-width:200px">
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Reports</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">Suspension history and portfolio health · {{ rpDays }}</p>
+</div>
+<button onClick="{{ rpExcel }}" style="white-space:nowrap;display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:8px 13px;background:var(--surface)" style-hover="background:var(--surface2);color:var(--text)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3"></path></svg><span>Export Excel</span></button>
+<button onClick="{{ rpPdf }}" style="white-space:nowrap;display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:8px 13px" style-hover="background:var(--accentHover)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z M14 2v6h6"></path></svg><span>Export PDF</span></button>
+</div>
+<div style="display:inline-flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:14px">
+<sc-for list="{{ rpRanges }}" as="r" hint-placeholder-count="4">
+<button onClick="{{ r.go }}" style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;background:{{ r.bg }};color:{{ r.c }};box-shadow:{{ r.sh }};border:1px solid {{ r.bd }}">{{ r.l }}</button>
+</sc-for>
+</div>
+<sc-if value="{{ rpCustom }}">
+<div style="display:flex;align-items:center;gap:8px;margin:-6px 0 14px;flex-wrap:wrap">
+<input type="date" value="{{ rpFrom }}" onInput="{{ onRpFrom }}" aria-label="From date" style="background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:600;color:var(--text)">
+<span style="color:var(--faint);font-size:12px;font-weight:700">to</span>
+<input type="date" value="{{ rpTo }}" onInput="{{ onRpTo }}" aria-label="To date" style="background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:600;color:var(--text)">
+</div>
+</sc-if>
+<div style="display:grid;grid-template-columns:{{ rpCols }};gap:14px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px;min-width:0">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+<div><div style="font-size:14.5px;font-weight:700">Suspensions over time</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Suspended listings per day</div></div>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--bad);background:var(--badBg);border:1px solid var(--badBd);border-radius:999px;padding:3px 10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--bad)"></span><span style="white-space:nowrap">{{ rpNow }} today</span></span>
+</div>
+<svg viewBox="0 0 640 170" preserveAspectRatio="none" style="width:100%;height:170px;display:block;margin-top:14px;overflow:visible">
+<line x1="0" x2="640" y1="128" y2="128" stroke="var(--border)" stroke-dasharray="3 5"></line>
+<line x1="0" x2="640" y1="86" y2="86" stroke="var(--border)" stroke-dasharray="3 5"></line>
+<line x1="0" x2="640" y1="44" y2="44" stroke="var(--border)" stroke-dasharray="3 5"></line>
+<line x1="0" x2="640" y1="169" y2="169" stroke="var(--border)"></line>
+<path d="{{ rpArea }}" fill="var(--badBg)" opacity="0.75"></path>
+<path d="{{ rpLine }}" fill="none" stroke="var(--bad)" stroke-width="2.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<circle cx="{{ rpCx }}" cy="{{ rpCy }}" r="4.5" fill="var(--bad)" stroke="var(--surface)" stroke-width="2"></circle>
+</svg>
+<div style="display:flex;justify-content:space-between;margin-top:8px">
+<sc-for list="{{ rpXL }}" as="x" hint-placeholder-count="5"><span style="font-size:11px;color:var(--faint)">{{ x }}</span></sc-for>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px;min-width:0">
+<div style="font-size:14.5px;font-weight:700">Suspension report</div>
+<div style="font-size:12px;color:var(--muted);margin-top:1px">Every suspension event with duration and recovery</div>
+<div style="overflow-x:auto;margin-top:12px">
+<div style="min-width:640px">
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;gap:10px;padding:8px 4px;border-bottom:1px solid var(--border);font-size:10.5px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px"><span>Business</span><span>Suspended on</span><span>Duration</span><span>Recovered</span><span>Status</span></div>
+<sc-for list="{{ suspEvents }}" as="se" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border);align-items:center">
+<div style="min-width:0"><div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ se.name }}</div><div style="font-size:11px;color:var(--faint)">{{ se.city }}</div></div>
+<span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">{{ se.on }}</span>
+<span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">{{ se.dur }}</span>
+<span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">{{ se.rec }}</span>
+<span><span style="display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ se.stBg }};border:1px solid {{ se.stBd }};color:{{ se.stC }};font-size:11px;font-weight:700;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:{{ se.stC }}"></span><span>{{ se.stL }}</span></span></span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px">
+<div style="font-size:14.5px;font-weight:700">Status distribution</div>
+<div style="display:flex;align-items:center;gap:18px;margin-top:14px;flex-wrap:wrap">
+<div style="position:relative;width:120px;height:120px;flex:0 0 auto">
+<svg viewBox="0 0 130 130" style="width:120px;height:120px;transform:rotate(-90deg)">
+<circle cx="65" cy="65" r="54" fill="none" stroke="var(--surface2)" stroke-width="13"></circle>
+<sc-for list="{{ rpSegs }}" as="g" hint-placeholder-count="4"><circle cx="65" cy="65" r="54" fill="none" stroke="{{ g.color }}" stroke-width="13" stroke-dasharray="{{ g.dash }}" stroke-dashoffset="{{ g.off }}"></circle></sc-for>
+</svg>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:19px;font-weight:800;letter-spacing:-0.5px">{{ rpPct }}</span><span style="font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.5px">Live</span></div>
+</div>
+<div style="flex:1;min-width:120px;display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ rpLegend }}" as="lg" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:8px;font-size:12.5px"><span style="width:8px;height:8px;border-radius:3px;background:{{ lg.c }};flex:0 0 auto"></span><span style="flex:1;color:var(--muted);font-weight:600">{{ lg.l }}</span><span style="font-weight:800;font-variant-numeric:tabular-nums">{{ lg.n }}</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px">
+<div style="font-size:14.5px;font-weight:700">Most affected cities</div>
+<div style="font-size:12px;color:var(--muted);margin-top:1px">Suspended + not found</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:13px">
+<sc-for list="{{ cityBars }}" as="cb" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="font-size:12px;font-weight:700;width:74px;flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ cb.l }}</span>
+<div style="flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--warn);width:{{ cb.w }}"></div></div>
+<span style="font-size:12px;font-weight:800;color:var(--muted);width:20px;text-align:right;font-variant-numeric:tabular-nums">{{ cb.n }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:17px 18px">
+<div style="font-size:14.5px;font-weight:700">Lowest uptime</div>
+<div style="font-size:12px;color:var(--muted);margin-top:1px">90-day availability per listing</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:13px">
+<sc-for list="{{ upRows }}" as="ur" hint-placeholder-count="8">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="width:130px;flex:0 0 auto;min-width:0"><div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ur.name }}</div><div style="font-size:10.5px;color:var(--faint)">{{ ur.city }} · {{ ur.inc }} incidents</div></div>
+<div style="flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden"><div style="height:100%;border-radius:999px;background:{{ ur.c }};width:{{ ur.w }}"></div></div>
+<span style="font-size:12px;font-weight:800;color:{{ ur.c }};width:46px;text-align:right;font-variant-numeric:tabular-nums">{{ ur.up }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</div></sc-if>
+<sc-if value="{{ isNotif }}"><div data-screen-label="Notifications" style="padding:24px 24px 80px;max-width:860px;margin:0 auto">
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Notifications</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">Who gets alerted, and how, when a listing changes status.</p>
+<div style="display:flex;gap:2px;margin-top:18px;border-bottom:1px solid var(--border)">
+<button onClick="{{ goPrefs }}" style="font-size:13px;font-weight:700;color:{{ nPrefsC }};white-space:nowrap;padding:9px 14px;border-bottom:2px solid {{ nPrefsB }};margin-bottom:-1px">Preferences</button>
+<button onClick="{{ goLog }}" style="font-size:13px;font-weight:700;color:{{ nLogC }};white-space:nowrap;padding:9px 14px;border-bottom:2px solid {{ nLogB }};margin-bottom:-1px">Alert log</button>
+</div>
+<sc-if value="{{ nPrefs }}">
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Email alerts by event</div>
+<div style="display:flex;flex-direction:column;margin-top:8px">
+<sc-for list="{{ prefRows }}" as="pr" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--border)">
+<span style="width:8px;height:8px;border-radius:50%;background:{{ pr.dotC }};flex:0 0 auto"></span>
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">{{ pr.l }}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">{{ pr.sub }}</div></div>
+<button role="switch" aria-checked="{{ pr.aria }}" aria-label="Toggle {{ pr.l }} alerts" onClick="{{ pr.toggle }}" style="width:36px;height:21px;border-radius:999px;background:{{ pr.tBg }};position:relative;flex:0 0 auto;transition:background .2s"><span style="position:absolute;top:2.5px;left:{{ pr.knobL }};width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .2s"></span></button>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Recipients</div>
+<div style="font-size:12px;color:var(--muted);margin-top:1px">Alerts go to every address below.</div>
+<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px">
+<sc-for list="{{ emailChips }}" as="em">
+<span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;padding:5px 7px 5px 12px"><span>{{ em.e }}</span><button onClick="{{ em.rm }}" aria-label="Remove recipient" style="width:16px;height:16px;border-radius:50%;background:var(--border2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--bad);color:#fff"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M18 6 6 18 M6 6l12 12"></path></svg></button></span>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px;margin-top:11px;flex-wrap:wrap">
+<input value="{{ emailIn }}" onInput="{{ onEmailIn }}" onKeyDown="{{ addEmail }}" placeholder="name@agency.com" aria-label="Add recipient email" style="flex:1;min-width:200px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:8px 12px;font-size:13px;outline:none">
+<button onClick="{{ addEmail }}" style="font-size:12.5px;font-weight:700;color:var(--accentInk);background:var(--accentSoft);border:1px solid var(--accentBorder);border-radius:9px;padding:8px 14px;white-space:nowrap" style-hover="background:var(--accentBorder)">Add</button>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Delivery mode</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:9px;margin-top:12px">
+<sc-for list="{{ modes }}" as="md">
+<button onClick="{{ md.go }}" style="display:flex;align-items:flex-start;gap:10px;padding:12px 13px;border-radius:11px;background:{{ md.bg }};border:1px solid {{ md.bd }};text-align:left" style-hover="border-color:var(--accentBorder)">
+<span style="width:15px;height:15px;border-radius:50%;border:1.5px solid {{ md.dotBd }};display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px"><span style="width:7px;height:7px;border-radius:50%;background:{{ md.dotBg }}"></span></span>
+<span><span style="display:block;font-size:13px;font-weight:700">{{ md.l }}</span><span style="display:block;font-size:11.5px;color:var(--muted);margin-top:1px">{{ md.sub }}</span></span>
+</button>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ nLog }}">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);margin-top:18px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap">
+<span style="font-size:13px;font-weight:700;flex:1">Every alert sent</span>
+<select value="{{ nfFilter }}" onChange="{{ onNfFilter }}" aria-label="Filter by event" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:8px;padding:6px 26px 6px 10px;font-size:12px;font-weight:700;color:var(--muted);background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 9px center">
+<option value="">All events</option><option value="Suspended">Suspended</option><option value="Back live">Back live</option><option value="Not found">Not found</option>
+</select>
+</div>
+<div style="overflow-x:auto">
+<div style="min-width:660px">
+<div style="display:grid;grid-template-columns:1.2fr 2fr 1.6fr 1fr .8fr;gap:10px;padding:9px 16px;background:var(--well);border-bottom:1px solid var(--border);font-size:10.5px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px"><span>Event</span><span>Listing</span><span>Recipient</span><span>Sent</span><span>Status</span></div>
+<sc-for list="{{ nfLog }}" as="lg" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:1.2fr 2fr 1.6fr 1fr .8fr;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center">
+<span><span style="display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ lg.bg }};border:1px solid {{ lg.bd }};color:{{ lg.c }};font-size:11px;font-weight:700;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:{{ lg.c }}"></span><span>{{ lg.ev }}</span></span></span>
+<span style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ lg.name }}</span>
+<span style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ lg.to }}</span>
+<span style="font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap">{{ lg.when }}</span>
+<span style="display:flex;align-items:center;gap:7px"><span style="font-size:12px;font-weight:800;color:{{ lg.stC }}">{{ lg.stL }}</span><sc-if value="{{ lg.failed }}"><button onClick="{{ lg.resend }}" style="font-size:11px;font-weight:700;color:var(--accentInk)" style-hover="text-decoration:underline">Resend</button></sc-if></span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+</div></sc-if>
+<sc-if value="{{ isSched }}"><div data-screen-label="Schedule" style="padding:24px 24px 80px;max-width:860px;margin:0 auto">
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Schedule</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">When GMB Guard automatically checks every listing.</p>
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><div style="font-size:14.5px;font-weight:700">Automatic checks</div><div style="font-size:12px;font-weight:700;color:{{ pauseC }};margin-top:2px">{{ pauseLabel }}</div></div>
+<button role="switch" aria-checked="{{ pausedA }}" aria-label="Pause automation" onClick="{{ togglePause }}" style="width:40px;height:23px;border-radius:999px;background:{{ pauseBg }};position:relative;flex:0 0 auto;transition:background .2s"><span style="position:absolute;top:2.5px;left:{{ pauseL }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .2s"></span></button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px">
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Daily check time</label>
+<select value="{{ schedTime }}" onChange="{{ onSchedTime }}" aria-label="Daily check time" style="width:100%;margin-top:6px;appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 26px 9px 11px;font-size:13px;font-weight:600;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 10px center">
+<sc-for list="{{ timeOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+</select></div>
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Timezone</label>
+<select value="{{ schedTz }}" onChange="{{ onSchedTz }}" aria-label="Timezone" style="width:100%;margin-top:6px;appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 26px 9px 11px;font-size:13px;font-weight:600;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 10px center">
+<sc-for list="{{ tzOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+</select></div>
+</div>
+<div style="margin-top:14px"><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Frequency</label>
+<div style="display:inline-flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px;margin-top:7px;display:flex;width:fit-content">
+<sc-for list="{{ schedFreqs }}" as="f"><button onClick="{{ f.go }}" style="font-size:12px;font-weight:700;padding:6px 13px;border-radius:8px;background:{{ f.bg }};color:{{ f.c }};box-shadow:{{ f.sh }};border:1px solid {{ f.bd }}">{{ f.l }}</button></sc-for>
+</div></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap">
+<span style="font-size:12px;color:var(--faint)">{{ estLine }}</span>
+<div style="flex:1"></div>
+<button onClick="{{ schedSave }}" style="font-size:13px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:9px 16px;white-space:nowrap" style-hover="background:var(--accentHover)">Save schedule</button>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Last run</div>
+<div style="font-size:12px;color:var(--muted);margin-top:2px">{{ lrTime }}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px">
+<div style="border:1px solid var(--okBd);background:var(--okBg);border-radius:10px;padding:10px 12px"><div style="font-size:19px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums">{{ lrLive }}</div><div style="font-size:11px;font-weight:700;color:var(--ok)">Live</div></div>
+<div style="border:1px solid var(--badBd);background:var(--badBg);border-radius:10px;padding:10px 12px"><div style="font-size:19px;font-weight:800;color:var(--bad);font-variant-numeric:tabular-nums">{{ lrSusp }}</div><div style="font-size:11px;font-weight:700;color:var(--bad)">Suspended</div></div>
+<div style="border:1px solid var(--naBd);background:var(--naBg);border-radius:10px;padding:10px 12px"><div style="font-size:19px;font-weight:800;color:var(--na);font-variant-numeric:tabular-nums">{{ lrNf }}</div><div style="font-size:11px;font-weight:700;color:var(--na)">Not found</div></div>
+<div style="border:1px solid var(--warnBd);background:var(--warnBg);border-radius:10px;padding:10px 12px"><div style="font-size:19px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums">{{ lrPend }}</div><div style="font-size:11px;font-weight:700;color:var(--warn)">Pending</div></div>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Upcoming runs</div>
+<div style="display:flex;flex-direction:column;margin-top:8px">
+<sc-for list="{{ upcoming }}" as="u" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border)">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M12 7v5l3.5 2 M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"></path></svg>
+<span style="flex:1;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums">{{ u.t }}</span>
+<span style="font-size:11px;color:var(--faint);font-family:'JetBrains Mono',monospace">{{ u.n }}</span>
+</div>
+</sc-for>
+</div>
+<div style="font-size:12px;color:var(--muted);margin-top:10px">Next check <span style="font-weight:800;color:var(--text)">{{ nextInShort }}</span></div>
+</div>
+</div>
+</div>
+</div></sc-if>
+<sc-if value="{{ isSettings }}"><div data-screen-label="Settings" style="padding:24px 24px 80px;max-width:760px;margin:0 auto">
+<h1 style="font-size:25px;font-weight:800;letter-spacing:-0.6px">Settings</h1>
+<p style="font-size:13px;color:var(--muted);margin-top:3px">Profile, team, API access and appearance.</p>
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Profile</div>
+<div style="display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap">
+<span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accentHover));color:var(--accentFg);font-size:17px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">{{ pInit }}</span>
+<button style="font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Change photo</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px">
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Full name</label>
+<input value="{{ pName }}" onInput="{{ onPName }}" aria-label="Full name" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;outline:none"></div>
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Email</label>
+<input value="{{ pEmail }}" onInput="{{ onPEmail }}" aria-label="Email" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;outline:none"></div>
+</div>
+<div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">
+<button onClick="{{ saveProfile }}" style="font-size:12.5px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:8px 14px;white-space:nowrap" style-hover="background:var(--accentHover)">Save changes</button>
+<button onClick="{{ togglePwOpen }}" style="font-size:12.5px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:8px 14px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Change password</button>
+</div>
+<sc-if value="{{ pwOpen }}">
+<div style="margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:11px;background:var(--well);animation:slideUp .18s ease">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Current password</label>
+<input type="password" value="{{ pwCur }}" onInput="{{ onPwCur }}" aria-label="Current password" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;outline:none"></div>
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">New password</label>
+<input type="password" value="{{ pwNew }}" onInput="{{ onPwNew }}" aria-label="New password" placeholder="At least 8 characters" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;outline:none"></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<button onClick="{{ updatePw }}" style="font-size:12.5px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:8px 14px;white-space:nowrap" style-hover="background:var(--accentHover)">Update password</button>
+<button onClick="{{ togglePwOpen }}" style="font-size:12.5px;font-weight:700;color:var(--muted);border-radius:9px;padding:8px 12px" style-hover="color:var(--text)">Cancel</button>
+</div>
+</div>
+</sc-if>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Team</div>
+<div style="font-size:12px;color:var(--muted);margin-top:1px">Admins manage listings and settings. Viewers see dashboards and reports.</div>
+<div style="display:flex;flex-direction:column;margin-top:8px">
+<sc-for list="{{ teamRows }}" as="tm" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--border);flex-wrap:wrap">
+<span style="width:32px;height:32px;border-radius:50%;background:var(--surface2);color:var(--muted);font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">{{ tm.init }}</span>
+<div style="flex:1;min-width:150px"><div style="display:flex;align-items:center;gap:7px"><span style="font-size:13px;font-weight:700">{{ tm.n }}</span><sc-if value="{{ tm.me }}"><span style="font-size:10px;font-weight:800;color:var(--accentInk);background:var(--accentSoft);border-radius:5px;padding:1px 6px">You</span></sc-if></div><div style="font-size:11.5px;color:var(--faint)">{{ tm.e }}</div></div>
+<sc-if value="{{ tm.notMe }}">
+<select value="{{ tm.roleSel }}" onChange="{{ tm.onRole }}" aria-label="Role" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:8px;padding:6px 26px 6px 10px;font-size:12px;font-weight:700;color:var(--muted);background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 9px center">
+<option value="Admin">Admin</option><option value="Viewer">Viewer</option>
+</select>
+<button onClick="{{ tm.rm }}" aria-label="Remove member" style="width:28px;height:28px;border-radius:8px;color:var(--faint);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--badBg);color:var(--bad)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+</sc-if>
+<sc-if value="{{ tm.me }}"><span style="font-size:12px;font-weight:700;color:var(--muted);padding:0 8px">{{ tm.r }}</span></sc-if>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<input value="{{ invite }}" onInput="{{ onInvite }}" placeholder="teammate@agency.com" aria-label="Invite email" style="flex:1;min-width:180px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:8px 12px;font-size:13px;outline:none">
+<select value="{{ inviteRole }}" onChange="{{ onInviteRole }}" aria-label="Invite role" style="appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:8px 26px 8px 11px;font-size:12.5px;font-weight:700;color:var(--muted);background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 9px center">
+<option value="Admin">Admin</option><option value="Viewer">Viewer</option>
+</select>
+<button onClick="{{ sendInvite }}" style="font-size:12.5px;font-weight:700;color:var(--accentInk);background:var(--accentSoft);border:1px solid var(--accentBorder);border-radius:9px;padding:8px 14px;white-space:nowrap" style-hover="background:var(--accentBorder)">Invite</button>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">API key</div>
+<div style="font-size:12px;color:var(--muted);margin-top:1px">Push status changes into Zapier, Make, or your own tooling.</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap">
+<code style="flex:1;min-width:220px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--well);border:1px solid var(--border);border-radius:9px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apiKey }}</code>
+<button onClick="{{ toggleApi }}" aria-label="Reveal API key" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--surface2);color:var(--text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path></svg></button>
+<button onClick="{{ copyApi }}" aria-label="Copy API key" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--border2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--surface2);color:var(--text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2z M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+<button onClick="{{ regenApi }}" style="font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:8px 12px" style-hover="background:var(--surface2);color:var(--text)">Regenerate</button>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700">Appearance</div>
+<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+<sc-for list="{{ themeTiles }}" as="tt">
+<button onClick="{{ tt.go }}" style="border:{{ tt.bw }} solid {{ tt.bd }};border-radius:12px;padding:9px;background:var(--surface);width:118px" style-hover="border-color:var(--accent)">
+<span style="display:block;height:52px;border-radius:8px;background:{{ tt.v }};overflow:hidden;position:relative;border:1px solid var(--border)">
+<sc-if value="{{ tt.isLight }}"><span style="position:absolute;inset:0;background:#F7F8FA"><span style="position:absolute;left:7px;top:7px;width:30%;height:5px;border-radius:3px;background:#D6DAE3"></span><span style="position:absolute;left:7px;top:17px;width:60%;height:5px;border-radius:3px;background:#E6E8EE"></span><span style="position:absolute;left:7px;top:27px;width:45%;height:5px;border-radius:3px;background:#E6E8EE"></span></span></sc-if>
+<sc-if value="{{ tt.isDark }}"><span style="position:absolute;inset:0;background:#0B0F14"><span style="position:absolute;left:7px;top:7px;width:30%;height:5px;border-radius:3px;background:#2E3A50"></span><span style="position:absolute;left:7px;top:17px;width:60%;height:5px;border-radius:3px;background:#212B3C"></span><span style="position:absolute;left:7px;top:27px;width:45%;height:5px;border-radius:3px;background:#212B3C"></span></span></sc-if>
+<sc-if value="{{ tt.isSys }}"><span style="position:absolute;inset:0;background:linear-gradient(105deg,#F7F8FA 49.5%,#0B0F14 50.5%)"><span style="position:absolute;left:7px;top:7px;width:30%;height:5px;border-radius:3px;background:#D6DAE3"></span><span style="position:absolute;right:7px;top:27px;width:30%;height:5px;border-radius:3px;background:#2E3A50"></span></span></sc-if>
+</span>
+<span style="display:block;font-size:12px;font-weight:700;color:{{ tt.c }};margin-top:7px">{{ tt.l }}</span>
+</button>
+</sc-for>
+</div>
+</div>
+<div style="background:var(--surface);border:1px solid var(--badBd);border-radius:14px;padding:18px 20px">
+<div style="font-size:14.5px;font-weight:700;color:var(--bad)">Danger zone</div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px;font-size:12.5px;color:var(--muted)">Permanently delete this account, all 512 listings and their history.</div>
+<button onClick="{{ delAccount }}" style="font-size:12.5px;font-weight:700;color:var(--bad);border:1px solid var(--badBd);border-radius:9px;padding:8px 14px;background:var(--surface);white-space:nowrap" style-hover="background:var(--badBg)">Delete account</button>
+</div>
+</div>
+</div>
+</div></sc-if>
+</main>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ anyPop }}"><div onClick="{{ closePops }}" style="position:fixed;inset:0;z-index:20"></div></sc-if>
+<sc-if value="{{ dw }}">
+<div style="position:fixed;inset:0;z-index:60">
+<div onClick="{{ closeDrawer }}" style="position:absolute;inset:0;background:var(--scrim);animation:fadeIn .2s"></div>
+<aside role="dialog" aria-label="Listing details" style="position:absolute;top:0;right:0;bottom:0;width:min(460px,100vw);background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--shadowLg);display:flex;flex-direction:column;animation:drawerIn .28s cubic-bezier(.2,.8,.25,1)">
+<div style="padding:18px 20px 0">
+<div style="display:flex;align-items:flex-start;gap:10px">
+<div style="flex:1;min-width:0">
+<div style="font-size:17px;font-weight:800;letter-spacing:-0.3px;line-height:1.3">{{ dw.name }}</div>
+<div style="font-size:12px;color:var(--muted);margin-top:2px">{{ dw.addr }} · {{ dw.cityL }}</div>
+</div>
+<button onClick="{{ closeDrawer }}" aria-label="Close" style="width:30px;height:30px;border-radius:8px;color:var(--faint);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto" style-hover="background:var(--surface2);color:var(--text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18 M6 6l12 12"></path></svg></button>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap">
+<sc-if value="{{ dw.busy }}"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 9px;border-radius:999px;background:var(--warnBg);border:1px solid var(--warnBd);color:var(--warn);font-size:12px;font-weight:700"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.2-8.56"></path></svg><span>Checking…</span></span></sc-if>
+<sc-if value="{{ dw.notBusy }}"><span role="status" style="display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 9px;border-radius:999px;background:{{ dw.stBg }};border:1px solid {{ dw.stBd }};color:{{ dw.stC }};font-size:12px;font-weight:700"><span style="width:6px;height:6px;border-radius:50%;background:{{ dw.stC }}"></span><span>{{ dw.stL }}</span></span></sc-if>
+<span style="font-size:12px;color:var(--faint)">Checked {{ dw.checked }}</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px">
+<div style="background:var(--well);border:1px solid var(--border);border-radius:10px;padding:9px 11px"><div style="font-size:10.5px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px">Category</div><div style="font-size:12.5px;font-weight:700;margin-top:2px">{{ dw.cat }}</div></div>
+<div style="background:var(--well);border:1px solid var(--border);border-radius:10px;padding:9px 11px"><div style="font-size:10.5px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.5px">Uptime · 90d</div><div style="font-size:12.5px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums">{{ dw.up }}</div></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<button onClick="{{ dw.check }}" style="white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--accentInk);background:var(--accentSoft);border:1px solid var(--accentBorder);border-radius:8px;padding:7px 12px" style-hover="background:var(--accentBorder)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6 M20.5 13a8.5 8.5 0 1 1-2-7.3L23 10"></path></svg><span>Check now</span></button>
+<a href="{{ dw.url }}" target="_blank" rel="noreferrer" style="white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;text-decoration:none" style-hover="background:var(--surface2);color:var(--text)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14 21 3"></path></svg><span>Open profile</span></a>
+<button onClick="{{ dw.edit }}" style="white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg><span>Edit</span></button>
+<div style="flex:1"></div>
+<button onClick="{{ dw.del }}" aria-label="Delete listing" style="width:31px;height:31px;border-radius:8px;color:var(--bad);border:1px solid var(--border2);display:inline-flex;align-items:center;justify-content:center" style-hover="background:var(--badBg);border-color:var(--badBd)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"></path></svg></button>
+</div>
+<div style="display:flex;gap:2px;margin-top:16px;border-bottom:1px solid var(--border)">
+<button onClick="{{ dw.goHist }}" style="font-size:12.5px;font-weight:700;color:{{ dw.thC }};white-space:nowrap;padding:8px 12px;border-bottom:2px solid {{ dw.thB }};margin-bottom:-1px">History</button>
+<button onClick="{{ dw.goLog }}" style="font-size:12.5px;font-weight:700;color:{{ dw.tlC }};white-space:nowrap;padding:8px 12px;border-bottom:2px solid {{ dw.tlB }};margin-bottom:-1px">Check log</button>
+<button onClick="{{ dw.goNotes }}" style="font-size:12.5px;font-weight:700;color:{{ dw.tnC }};white-space:nowrap;padding:8px 12px;border-bottom:2px solid {{ dw.tnB }};margin-bottom:-1px">Notes</button>
+</div>
+</div>
+<div style="flex:1;overflow-y:auto;padding:16px 20px 24px">
+<sc-if value="{{ dw.tabHist }}">
+<div>
+<sc-for list="{{ dw.events }}" as="ev" hint-placeholder-count="4">
+<div style="display:flex;gap:12px">
+<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">
+<span style="width:11px;height:11px;border-radius:50%;background:{{ ev.bg }};border:2.5px solid {{ ev.c }};margin-top:3px"></span>
+<span style="width:2px;flex:1;background:var(--border);margin:4px 0"></span>
+</div>
+<div style="padding-bottom:18px;min-width:0">
+<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-size:13px;font-weight:700;color:{{ ev.c }}">{{ ev.toL }}</span><sc-if value="{{ ev.fromL }}"><span style="font-size:11px;color:var(--faint)">from {{ ev.fromL }}</span></sc-if></div>
+<div style="font-size:11.5px;color:var(--faint);margin-top:1px;font-variant-numeric:tabular-nums">{{ ev.date }}</div>
+<div style="font-size:12px;color:var(--muted);margin-top:3px">{{ ev.note }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ dw.tabLog }}">
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ dw.logs }}" as="lg" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+<span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex:1">{{ lg.t }}</span>
+<span style="font-size:12px;font-weight:700;color:{{ lg.c }}">{{ lg.r }}</span>
+<span style="font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums;width:64px;text-align:right">{{ lg.ms }}</span>
+<span style="font-size:10.5px;font-weight:800;color:var(--faint);background:var(--surface2);border-radius:5px;padding:2px 7px;width:58px;text-align:center">{{ lg.mode }}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ dw.tabNotes }}">
+<div>
+<textarea value="{{ dw.note }}" onInput="{{ dw.onNote }}" placeholder="Add internal notes about this listing — reinstatement requests, client context, verification steps…" aria-label="Listing notes" style="width:100%;min-height:150px;background:var(--inputBg);border:1px solid var(--border2);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.6;resize:vertical;outline:none"></textarea>
+<div style="font-size:11.5px;color:var(--faint);margin-top:7px">{{ dw.noteHint }}</div>
+</div>
+</sc-if>
+</div>
+</aside>
+</div>
+</sc-if>
+<sc-if value="{{ bmOpen }}">
+<div style="position:fixed;inset:0;z-index:70">
+<div onClick="{{ closeBm }}" style="position:absolute;inset:0;background:var(--scrim);animation:fadeIn .15s"></div>
+<div role="dialog" aria-label="{{ bmTitle }}" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(480px,calc(100vw - 32px));max-height:88vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border2);border-radius:16px;box-shadow:var(--shadowLg);padding:22px;animation:slideUp .2s ease">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="font-size:16px;font-weight:800">{{ bmTitle }}</div>
+<button onClick="{{ closeBm }}" aria-label="Close" style="color:var(--faint)" style-hover="color:var(--text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18 M6 6l12 12"></path></svg></button>
+</div>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:16px">Business name *</label>
+<input value="{{ bmName }}" onInput="{{ onBmName }}" placeholder="Bright Smile Dental Studio" aria-label="Business name" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ bmNameBd }};border-radius:9px;padding:9px 12px;font-size:13px;outline:none">
+<sc-if value="{{ bmErrName }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ bmErrName }}</div></sc-if>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:13px">Street address</label>
+<input value="{{ bmAddr }}" onInput="{{ onBmAddr }}" placeholder="1420 S Lamar Blvd" aria-label="Street address" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;outline:none">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px">
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">City *</label>
+<input value="{{ bmCity }}" onInput="{{ onBmCity }}" placeholder="Austin" aria-label="City" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ bmCityBd }};border-radius:9px;padding:9px 12px;font-size:13px;outline:none">
+<sc-if value="{{ bmErrCity }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ bmErrCity }}</div></sc-if></div>
+<div><label style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Category</label>
+<input value="{{ bmCat }}" onInput="{{ onBmCat }}" placeholder="Dentist" aria-label="Category" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;outline:none"></div>
+</div>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:13px">Google profile URL</label>
+<input value="{{ bmUrl }}" onInput="{{ onBmUrl }}" placeholder="https://maps.google.com/… (optional — auto-detected if empty)" aria-label="Profile URL" style="width:100%;margin-top:6px;background:var(--inputBg);border:1px solid {{ bmUrlBd }};border-radius:9px;padding:9px 12px;font-size:13px;outline:none;font-family:'JetBrains Mono',monospace;font-size:12px">
+<sc-if value="{{ bmErrUrl }}"><div style="font-size:11.5px;font-weight:600;color:var(--bad);margin-top:5px">{{ bmErrUrl }}</div></sc-if>
+<label style="display:block;font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:13px">Tag</label>
+<select value="{{ bmTag }}" onChange="{{ onBmTag }}" aria-label="Tag" style="width:100%;margin-top:6px;appearance:none;-webkit-appearance:none;background:var(--inputBg);border:1px solid var(--border2);border-radius:9px;padding:9px 26px 9px 11px;font-size:13px;font-weight:600;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%222.5%22><path d=%22M6 9l6 6 6-6%22/></svg>');background-repeat:no-repeat;background-position:right 10px center">
+<option value="">No tag</option><option value="Priority">Priority</option><option value="New client">New client</option><option value="Q3 audit">Q3 audit</option>
+</select>
+<div style="display:flex;gap:9px;justify-content:flex-end;margin-top:20px">
+<button onClick="{{ closeBm }}" style="font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:9px 14px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Cancel</button>
+<button onClick="{{ saveBm }}" style="font-size:13px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:9px 16px;white-space:nowrap" style-hover="background:var(--accentHover)">{{ bmLabel }}</button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ exOpen }}">
+<div style="position:fixed;inset:0;z-index:70">
+<div onClick="{{ closeExport }}" style="position:absolute;inset:0;background:var(--scrim);animation:fadeIn .15s"></div>
+<div role="dialog" aria-label="Export businesses" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(480px,calc(100vw - 32px));max-height:88vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border2);border-radius:16px;box-shadow:var(--shadowLg);padding:22px;animation:slideUp .2s ease">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="font-size:16px;font-weight:800">Export businesses</div>
+<button onClick="{{ closeExport }}" aria-label="Close" style="color:var(--faint)" style-hover="color:var(--text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18 M6 6l12 12"></path></svg></button>
+</div>
+<div style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:16px">Scope</div>
+<div style="display:flex;flex-direction:column;gap:7px;margin-top:8px">
+<sc-for list="{{ exScopes }}" as="o">
+<button onClick="{{ o.go }}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:{{ o.bg }};border:1px solid {{ o.bd }};text-align:left" style-hover="border-color:var(--accentBorder)">
+<span style="width:15px;height:15px;border-radius:50%;border:1.5px solid {{ o.dotBd }};display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><span style="width:7px;height:7px;border-radius:50%;background:{{ o.dotBg }}"></span></span>
+<span style="flex:1;font-size:13px;font-weight:700">{{ o.l }}</span>
+<span style="font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums">{{ o.sub }}</span>
+</button>
+</sc-for>
+</div>
+<div style="font-size:11px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.6px;margin-top:16px">Columns</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+<sc-for list="{{ exColList }}" as="o">
+<button onClick="{{ o.go }}" style="font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:{{ o.bg }};border:1px solid {{ o.bd }};color:{{ o.c }}" style-hover="border-color:var(--accentBorder)">{{ o.l }}</button>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px;margin-top:16px">
+<sc-for list="{{ exFmts }}" as="o">
+<button onClick="{{ o.go }}" style="flex:1;padding:10px;border-radius:10px;background:{{ o.bg }};border:1px solid {{ o.bd }};text-align:center" style-hover="border-color:var(--accentBorder)"><div style="font-size:13.5px;font-weight:800;color:{{ o.c }}">{{ o.l }}</div><div style="font-size:11px;color:var(--faint);margin-top:1px">{{ o.sub }}</div></button>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:16px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--well)">
+<div style="flex:1"><div style="font-size:12.5px;font-weight:700">Include status history</div><div style="font-size:11.5px;color:var(--faint)">One row per status change, on a second sheet</div></div>
+<button role="switch" aria-checked="{{ exHistA }}" onClick="{{ toggleExHist }}" style="width:36px;height:21px;border-radius:999px;background:{{ exHistBg }};position:relative;flex:0 0 auto;transition:background .2s"><span style="position:absolute;top:2.5px;left:{{ exHistL }};width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .2s"></span></button>
+</div>
+<div style="display:flex;gap:9px;justify-content:flex-end;margin-top:18px">
+<button onClick="{{ closeExport }}" style="font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:9px 14px;white-space:nowrap" style-hover="background:var(--surface2);color:var(--text)">Cancel</button>
+<button onClick="{{ doExport }}" style="font-size:13px;font-weight:700;color:var(--accentFg);background:var(--accent);border-radius:9px;padding:9px 16px;white-space:nowrap" style-hover="background:var(--accentHover)">{{ exLabel }}</button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ cmdOpen }}">
+<div style="position:fixed;inset:0;z-index:80">
+<div onClick="{{ closeCmd }}" style="position:absolute;inset:0;background:var(--scrim);animation:fadeIn .15s"></div>
+<div role="dialog" aria-label="Command palette" style="position:absolute;left:50%;top:13vh;transform:translateX(-50%);width:min(560px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--border2);border-radius:15px;box-shadow:var(--shadowLg);overflow:hidden;animation:slideUp .18s ease">
+<div style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border)">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2" stroke-linecap="round"><path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3"></path></svg>
+<input autoFocus value="{{ cmdQ }}" onInput="{{ onCmdQ }}" placeholder="Search pages and actions…" aria-label="Command search" style="flex:1;border:0;outline:0;background:transparent;font-size:14.5px;color:var(--text)">
+<span style="font-size:10.5px;font-weight:700;border:1px solid var(--border2);border-radius:5px;padding:1px 6px;color:var(--muted)">esc</span>
+</div>
+<div style="max-height:340px;overflow-y:auto;padding:6px">
+<sc-for list="{{ cmdList }}" as="cm" hint-placeholder-count="6">
+<button onClick="{{ cm.run }}" onMouseEnter="{{ cm.over }}" style="display:flex;align-items:center;gap:11px;width:100%;padding:9px 11px;border-radius:9px;background:{{ cm.bg }};text-align:left">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="{{ cm.d }}"></path></svg>
+<span style="flex:1;font-size:13.5px;font-weight:600">{{ cm.l }}</span>
+<span style="font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.4px">{{ cm.s }}</span>
+</button>
+</sc-for>
+</div>
+<div style="display:flex;gap:14px;padding:9px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--faint)"><span>↑↓ navigate</span><span>↵ select</span><span>esc close</span></div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ confirm }}">
+<div style="position:fixed;inset:0;z-index:85">
+<div onClick="{{ confirmNo }}" style="position:absolute;inset:0;background:var(--scrim);animation:fadeIn .15s"></div>
+<div role="alertdialog" aria-label="{{ confirm.title }}" style="position:absolute;left:50%;top:32vh;transform:translateX(-50%);width:min(420px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--border2);border-radius:15px;box-shadow:var(--shadowLg);padding:20px;animation:slideUp .18s ease">
+<div style="display:flex;gap:13px;align-items:flex-start">
+<span style="width:34px;height:34px;border-radius:10px;background:var(--badBg);color:var(--bad);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01"></path></svg></span>
+<div style="flex:1;min-width:0">
+<div style="font-size:15px;font-weight:700">{{ confirm.title }}</div>
+<div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.55">{{ confirm.msg }}</div>
+</div>
+</div>
+<div style="display:flex;gap:9px;justify-content:flex-end;margin-top:18px">
+<button onClick="{{ confirmNo }}" style="font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--border2);border-radius:9px;padding:8px 14px;background:var(--surface)" style-hover="background:var(--surface2);color:var(--text)">Cancel</button>
+<button onClick="{{ confirmYes }}" style="font-size:13px;font-weight:700;color:#fff;background:var(--bad);border-radius:9px;padding:8px 14px" style-hover="opacity:.9">{{ confirm.label }}</button>
+</div>
+</div>
+</div>
+</sc-if>
+<div aria-live="polite" style="position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:90;max-width:min(380px,calc(100vw - 36px))">
+<sc-for list="{{ toasts }}" as="t">
+<div style="display:flex;gap:11px;align-items:flex-start;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;box-shadow:var(--shadowLg);animation:slideIn .28s cubic-bezier(.2,.8,.3,1)">
+<span style="width:26px;height:26px;border-radius:8px;background:{{ t.iBg }};color:{{ t.iC }};display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.d }}"></path></svg></span>
+<div style="min-width:0;flex:1">
+<div style="font-size:13px;font-weight:700">{{ t.title }}</div>
+<sc-if value="{{ t.msg }}"><div style="font-size:12.5px;color:var(--muted);margin-top:1px">{{ t.msg }}</div></sc-if>
+<sc-if value="{{ t.actLabel }}"><button onClick="{{ t.act }}" style="font-size:12.5px;font-weight:700;color:var(--accentInk);margin-top:6px;white-space:nowrap" style-hover="text-decoration:underline">{{ t.actLabel }}</button></sc-if>
+</div>
+<button onClick="{{ t.close }}" aria-label="Dismiss" style="color:var(--faint)" style-hover="color:var(--text)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18 M6 6l12 12"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;indigo&quot;,&quot;emerald&quot;],&quot;default&quot;:&quot;indigo&quot;,&quot;tsType&quot;:&quot;'indigo'|'emerald'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;firstRun&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo state&quot;}}">
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    let sd=1337; this.R=()=>{sd=(sd*1103515245+12345)&2147483647;return sd/2147483647};
+    const R=this.R, now=Date.now();
+    this.IC={grid:'M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z',
+      store:'M16 20V6a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v14 M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v11H2z M2 20h20',
+      bars:'M3 3v18h18 M8 17v-4 M13 17V7 M18 17v-7',
+      bell:'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9 M10.3 21a1.94 1.94 0 0 0 3.4 0',
+      clock:'M12 7v5l3.5 2 M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0',
+      gear:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z',
+      zap:'M13 2 3 14h9l-1 8 10-12h-9l1-8z',upload:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M17 8l-5-5-5 5 M12 3v12',
+      download:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
+      moon:'M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z',out:'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
+      check:'M20 6 9 17l-5-5',x:'M18 6 6 18 M6 6l12 12',alert:'M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01',
+      chl:'M11 17l-5-5 5-5 M18 17l-5-5 5-5',chr:'M13 17l5-5-5-5 M6 17l5-5 5-5'};
+    this.IC.chr='M13 17l5-5-5-5 M6 17l5-5-5-5';
+    const F=['Bright Smile','Lone Star','Summit','Riverbend','Bluebonnet','Coastal','Ironclad','Maple Grove','Sunrise','Cedar Park','Liberty','Falcon','Northside','Grand Oak','Silverline','Harbor Point','Redstone','Clearwater','Hilltop','Magnolia','Copperfield','Westgate','Kingsland','Palm Grove','Stonebridge','Lakeside','Vista','Golden Gate','Metro','Prima'];
+    const K=[['Dental Studio','Dentist'],['Plumbing Co.','Plumber'],['Kitchen','Restaurant'],['Law Group','Law firm'],['Air and Heat','HVAC'],['Auto Care','Auto repair'],['Salon','Salon'],['Chiropractic','Chiropractor'],['Roofing Co.','Roofing'],['Realty Group','Real estate'],['Animal Hospital','Veterinarian'],['Strength Club','Gym']];
+    const CT=[['Austin','TX'],['Dallas','TX'],['Houston','TX'],['Miami','FL'],['Orlando','FL'],['Tampa','FL'],['Phoenix','AZ'],['Denver','CO'],['Atlanta','GA'],['Nashville','TN'],['Charlotte','NC'],['San Diego','CA']];
+    const SRT=['Lamar Blvd','Main St','Oak Ave','Congress Ave','Peachtree St','Ocean Dr','Broadway','Market St','Elm St','Sunset Blvd','Church St','5th Ave'];
+    const sts=[]; for(let i=0;i<512;i++) sts.push(i<23?'susp':i<32?'pend':i<44?'nf':'live');
+    for(let i=511;i>0;i--){const j=(R()*(i+1))|0;const t=sts[i];sts[i]=sts[j];sts[j]=t}
+    const auto=this.sinceNine(now);
+    this.biz=[];
+    for(let i=0;i<512;i++){const k=K[(R()*12)|0],c=CT[(R()*12)|0],st=sts[i];
+      this.biz.push({id:i+1,name:F[i%30]+' '+k[0]+(i>=360?' — '+c[0]:''),addr:(120+((R()*4800)|0))+' '+SRT[(R()*12)|0],city:c[0],stt:c[1],cat:k[1],status:st,lastMin:R()<.12?((R()*170)|0)+4:auto,chAt:now-(st==='live'?4+R()*110:1+R()*28)*864e5,up:st==='live'?96+R()*3.9:st==='susp'?58+R()*28:86+R()*11,tag:R()<.16?['Priority','New client','Q3 audit'][(R()*3)|0]:null})}
+    let v=15; this.trend=[]; for(let i=0;i<90;i++){v=Math.max(7,Math.min(31,v+Math.round((R()-.47)*4)));this.trend.push(v)} this.trend[89]=23;
+    const fl=[['susp','live'],['live','susp'],['live','nf'],['susp','live'],['live','susp'],['nf','live'],['live','susp'],['pend','live']];
+    this.activity=fl.map((f,i)=>{const b=this.biz[(i*61+9)%512];return {b,from:f[0],to:f[1],at:now-(i*167+26)*6e4}});
+    this.tid=0; this.deleted=null; this.mainRef=React.createRef();
+    this.state={themePref:p.defaultTheme==='dark'?'dark':'light',sysDark:false,screen:'dashboard',loaded:{},vw:'lg',sideOpen:true,
+      search:'',fStatus:[],fCity:'',fCat:'',page:1,ps:25,sortBy:'name',sortDir:1,view:'all',sel:{},menuRow:null,
+      cols:{city:true,cat:true,url:true,checked:true,changed:true},colsOpen:false,
+      drawer:null,dTab:'history',notes:{},checking:null,rowBusy:{},just:{},toasts:[],bellOpen:false,avOpen:false,unread:3,
+      cmdOpen:false,cmdQ:'',cmdIdx:0,exOpen:false,exScope:'filtered',exFmt:'xlsx',exHist:false,
+      exCols:{name:true,city:true,cat:true,url:true,status:true,checked:true,changed:true,up:false},
+      confirm:null,impStep:1,impMap:{},impFixed:{},impProg:0,impPhase:'idle',
+      nTab:'prefs',prefs:{susp:true,live:true,nf:false},nMode:'instant',emails:['alerts@northstarlocal.com','ops@northstarlocal.com'],emailIn:'',
+      schedTime:'09:00',schedTz:'America/Chicago (CDT)',schedFreq:'Daily',paused:false,
+      team:[{n:'Sarah Mitchell',e:'sarah@northstarlocal.com',r:'Admin',me:true},{n:'Dev Patel',e:'dev@northstarlocal.com',r:'Admin',me:false},{n:'Maya Chen',e:'maya@northstarlocal.com',r:'Viewer',me:false}],
+      invite:'',inviteRole:'Viewer',apiShow:false,pName:'Sarah Mitchell',pEmail:'sarah@northstarlocal.com',
+      aEmail:'sarah@northstarlocal.com',aPw:'',aName:'',aAgency:'',aShowPw:false,aRemember:true,aErr:{},aSent:false,rpRange:'30d',rpFrom:new Date(Date.now()-29*864e5).toISOString().slice(0,10),rpTo:new Date().toISOString().slice(0,10),pwOpen:false,pwCur:'',pwNew:'',nfFilter:'',bizModal:null,tick:0};
+  }
+  componentDidMount(){
+    this.onRes=()=>{const w=window.innerWidth;const vw=w<740?'sm':w<1120?'md':'lg';if(vw!==this.state.vw)this.setState({vw})};
+    this.onRes(); window.addEventListener('resize',this.onRes);
+    this.mq=window.matchMedia('(prefers-color-scheme: dark)'); this.mqL=e=>this.setState({sysDark:e.matches});
+    this.setState({sysDark:this.mq.matches}); this.mq.addEventListener('change',this.mqL);
+    this.onKey=e=>{const k=e.key.toLowerCase();const typing=/input|textarea|select/i.test(e.target.tagName);
+      if((e.metaKey||e.ctrlKey)&&k==='k'){e.preventDefault();this.setState(s=>({cmdOpen:!s.cmdOpen,cmdQ:'',cmdIdx:0}));return}
+      if(k==='escape'){const s=this.state;
+        if(s.cmdOpen||s.exOpen||s.confirm||s.menuRow!==null||s.bellOpen||s.avOpen||s.colsOpen){this.setState({cmdOpen:false,exOpen:false,confirm:null,menuRow:null,bellOpen:false,avOpen:false,colsOpen:false})}
+        else if(s.drawer)this.setState({drawer:null});return}
+      if(this.state.cmdOpen){const L=this.cmds();
+        if(k==='arrowdown'){e.preventDefault();this.setState(s=>({cmdIdx:Math.min(L.length-1,s.cmdIdx+1)}))}
+        else if(k==='arrowup'){e.preventDefault();this.setState(s=>({cmdIdx:Math.max(0,s.cmdIdx-1)}))}
+        else if(k==='enter'&&L[this.state.cmdIdx])L[this.state.cmdIdx].run();return}
+      if(!typing&&k==='c'&&!e.metaKey&&!e.ctrlKey)this.startCheckAll()};
+    window.addEventListener('keydown',this.onKey);
+    this.ldT=setTimeout(()=>this.setState(s=>({loaded:{...s.loaded,dashboard:1}})),700);
+    this.tkI=setInterval(()=>this.setState(s=>({tick:s.tick+1})),30000);
+  }
+  componentWillUnmount(){window.removeEventListener('resize',this.onRes);window.removeEventListener('keydown',this.onKey);this.mq&&this.mq.removeEventListener('change',this.mqL);clearInterval(this.tkI);clearInterval(this.ckI);clearTimeout(this.ldT)}
+  sinceNine(now){const d=new Date(now),n=new Date(now);n.setHours(9,0,0,0);let df=d-n;if(df<0)df+=864e5;return (df/6e4)|0}
+  theme(){return this.state.themePref==='system'?(this.state.sysDark?'dark':'light'):this.state.themePref}
+  ST(){return {live:{l:'Live',c:'var(--ok)',bg:'var(--okBg)',bd:'var(--okBd)'},susp:{l:'Suspended',c:'var(--bad)',bg:'var(--badBg)',bd:'var(--badBd)'},pend:{l:'Pending',c:'var(--warn)',bg:'var(--warnBg)',bd:'var(--warnBd)'},nf:{l:'Not found',c:'var(--na)',bg:'var(--naBg)',bd:'var(--naBd)'}}}
+  rel(m){return m<1?'just now':m<60?((m|0)+'m ago'):m<1440?(((m/60)|0)+'h '+((m%60)|0)+'m ago'):(((m/1440)|0)+'d ago')}
+  ago(t){return this.rel((Date.now()-t)/6e4)}
+  fdate(t){return new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+  fdt(t){const d=new Date(t);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+', '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}
+  lineP(pts,w,h,pad){pad=pad||5;const mx=Math.max.apply(0,pts),mn=Math.min.apply(0,pts);const r1=x=>Math.round(x*10)/10;
+    const X=i=>r1(i/(pts.length-1)*w),Y=v=>r1(h-pad-((v-mn)/((mx-mn)||1))*(h-2*pad));
+    let d='M'+X(0)+' '+Y(pts[0]);for(let i=1;i<pts.length;i++)d+=' L'+X(i)+' '+Y(pts[i]);
+    return {d,lx:X(pts.length-1),ly:Y(pts[pts.length-1]),area:d+' L'+w+' '+h+' L0 '+h+' Z'}}
+  nav(id){this.setState({screen:id,menuRow:null,bellOpen:false,avOpen:false,cmdOpen:false,colsOpen:false});
+    if(!this.state.loaded[id]&&id==='businesses')setTimeout(()=>this.setState(s=>({loaded:{...s.loaded,[id]:1}})),650);
+    this.mainRef.current&&this.mainRef.current.scrollTo(0,0)}
+  toast(title,msg,actLabel,act,tone){const id=++this.tid;this.setState(s=>({toasts:[...s.toasts,{id,title,msg,actLabel,act,tone:tone||'ok'}]}));
+    setTimeout(()=>this.setState(s=>({toasts:s.toasts.filter(x=>x.id!==id)})),5600)}
+  openDrawer(b){this.setState({drawer:b.id,dTab:'history',menuRow:null,bellOpen:false})}
+  startCheckAll(){if(this.state.checking)return;const total=this.biz.length;this.setState({checking:{done:0,total}});
+    this.ckI=setInterval(()=>{const c=this.state.checking;if(!c)return;const done=Math.min(total,c.done+3+((Math.random()*7)|0));
+      if(done>=total){clearInterval(this.ckI);this.finishCheck()}else this.setState({checking:{...c,done}})},46)}
+  cancelCheck(){clearInterval(this.ckI);this.setState({checking:null});this.toast('Check cancelled','Partial results were kept.',null,null,'na')}
+  finishCheck(){const flips=this.biz.filter(b=>b.status==='susp').slice(0,2);const j={};
+    flips.forEach(b=>{b.status='live';b.chAt=Date.now();j[b.id]=1;this.activity.unshift({b,from:'susp',to:'live',at:Date.now()})});
+    this.biz.forEach(b=>b.lastMin=0);
+    this.setState(s=>({checking:null,just:j,unread:s.unread+2,tick:s.tick+1}));
+    this.toast('Check complete','512 listings checked — 2 came back live.','View changes',()=>this.nav('dashboard'));
+    setTimeout(()=>this.setState({just:{}}),1700)}
+  toggleTheme(){this.setState({themePref:this.theme()==='dark'?'light':'dark'})}
+  nextCheck(){const n=new Date(),t=new Date();t.setHours(9,0,0,0);if(t<=n)t.setDate(t.getDate()+1);
+    const df=t-n,h=(df/36e5)|0,m=((df%36e5)/6e4)|0;return {long:h+'h '+m+'m',short:'in '+h+'h '+m+'m',pct:(100-df/864e5*100).toFixed(1)+'%'}}
+  cmds(){const q=this.state.cmdQ.toLowerCase();const IC=this.IC;const go=id=>()=>{this.setState({cmdOpen:false});this.nav(id)};
+    const L=[{s:'Go to',l:'Dashboard',d:IC.grid,run:go('dashboard')},{s:'Go to',l:'Businesses',d:IC.store,run:go('businesses')},
+      {s:'Go to',l:'Reports',d:IC.bars,run:go('reports')},{s:'Go to',l:'Notifications',d:IC.bell,run:go('notifications')},
+      {s:'Go to',l:'Schedule',d:IC.clock,run:go('schedule')},{s:'Go to',l:'Settings',d:IC.gear,run:go('settings')},
+      {s:'Action',l:'Check all listings now',d:IC.zap,run:()=>{this.setState({cmdOpen:false});this.startCheckAll()}},
+      {s:'Action',l:'Import businesses',d:IC.upload,run:()=>{this.setState({cmdOpen:false,impStep:1,impPhase:'idle'});this.nav('import')}},
+      {s:'Action',l:'Export businesses',d:IC.download,run:()=>this.setState({cmdOpen:false,exOpen:true})},
+      {s:'Action',l:'Toggle theme',d:IC.moon,run:()=>{this.setState({cmdOpen:false});this.toggleTheme()}},
+      {s:'Action',l:'Sign out',d:IC.out,run:()=>{this.setState({cmdOpen:false});this.nav('login')}}];
+    return L.filter(c=>c.l.toLowerCase().includes(q))}
+  coreVals(){const s=this.state,th=this.theme(),IC=this.IC,lg=s.vw==='lg',open=lg&&s.sideOpen,c=s.checking,nx=this.nextCheck();
+    const navItems=[['dashboard','Dashboard',IC.grid],['businesses','Businesses',IC.store],['reports','Reports',IC.bars],['notifications','Notifications',IC.bell],['schedule','Schedule',IC.clock],['settings','Settings',IC.gear]].map(a=>{
+      const act=s.screen===a[0]||(a[0]==='businesses'&&s.screen==='import');
+      return {id:a[0],label:a[1],d:a[2],go:()=>this.nav(a[0]),bg:act?'var(--accentSoft)':'transparent',color:act?'var(--accentInk)':'var(--muted)',fw:act?700:500,hbg:act?'var(--accentSoft)':'var(--surface2)',hc:act?'var(--accentInk)':'var(--text)'}});
+    const bellItems=this.activity.slice(0,5).map((a,i)=>({t:(a.to==='susp'?'Suspended: ':a.to==='live'?'Back live: ':a.to==='nf'?'Not found: ':'Pending: ')+a.b.name,when:this.ago(a.at),dot:this.ST()[a.to].c,unreadDot:i<s.unread?'var(--accentInk)':'transparent',go:()=>{this.setState({bellOpen:false});this.nav('businesses');this.openDrawer(a.b)}}));
+    const auth=['login','signup','forgot'].indexOf(s.screen)>-1;
+    return {theme:th,accent:this.props.accent,isAuth:auth,inApp:!auth,
+      isDash:s.screen==='dashboard',isBiz:s.screen==='businesses',isImport:s.screen==='import',isReports:s.screen==='reports',isNotif:s.screen==='notifications',isSched:s.screen==='schedule',isSettings:s.screen==='settings',
+      sideW:open?'224px':'62px',sideLabels:open,sideT:open?'Collapse':'Expand',collapseIcon:open?IC.chl:IC.chr,
+      toggleSide:()=>this.setState(x=>({sideOpen:!x.sideOpen})),navItems,
+      openCmd:()=>this.setState({cmdOpen:true,cmdQ:'',cmdIdx:0}),
+      checking:c,ckPct:c?(((c.done/c.total)*100)|0)+'%':'0%',ckCount:c?c.done+' / '+c.total:'',ckShort:c?c.done+' / '+c.total:'',
+      startCheckAll:()=>this.startCheckAll(),cancelCheck:()=>this.cancelCheck(),
+      sunOp:th==='dark'?0:1,moonOp:th==='dark'?1:0,sunRot:th==='dark'?'-60deg':'0deg',moonRot:th==='dark'?'0deg':'60deg',toggleTheme:()=>this.toggleTheme(),
+      bellOpen:s.bellOpen,toggleBell:()=>this.setState(x=>({bellOpen:!x.bellOpen,avOpen:false})),unreadN:s.unread,unreadShow:s.unread>0,
+      markRead:()=>this.setState({unread:0}),bellItems,goNotifSettings:()=>{this.setState({bellOpen:false});this.nav('notifications')},
+      avOpen:s.avOpen,toggleAv:()=>this.setState(x=>({avOpen:!x.avOpen,bellOpen:false})),
+      goProfile:()=>{this.setState({avOpen:false});this.nav('settings')},goApiKeys:()=>{this.setState({avOpen:false});this.nav('settings')},
+      signOut:()=>{this.setState({avOpen:false});this.nav('login')},
+      userName:s.pName,userEmail:s.pEmail,userInit:s.pName.split(' ').map(x=>x[0]).join('').slice(0,2),
+      anyPop:s.bellOpen||s.avOpen||s.menuRow!==null||s.colsOpen,closePops:()=>this.setState({bellOpen:false,avOpen:false,menuRow:null,colsOpen:false}),
+      toasts:s.toasts.map(t=>({...t,iBg:t.tone==='bad'?'var(--badBg)':t.tone==='warn'?'var(--warnBg)':t.tone==='na'?'var(--naBg)':'var(--okBg)',
+        iC:t.tone==='bad'?'var(--bad)':t.tone==='warn'?'var(--warn)':t.tone==='na'?'var(--na)':'var(--ok)',
+        d:t.tone==='bad'?IC.alert:t.tone==='na'?IC.x:IC.check,act:t.act||undefined,actLabel:t.actLabel||undefined,
+        close:()=>this.setState(x=>({toasts:x.toasts.filter(y=>y.id!==t.id)}))})),
+      nextIn:nx.long,nextInShort:nx.short,dayPct:nx.pct,mainRef:this.mainRef,
+      cmdOpen:s.cmdOpen,cmdQ:s.cmdQ,onCmdQ:e=>this.setState({cmdQ:e.target.value,cmdIdx:0}),closeCmd:()=>this.setState({cmdOpen:false}),
+      cmdList:this.cmds().map((cm,i)=>({...cm,bg:i===s.cmdIdx?'var(--surface2)':'transparent',over:()=>this.setState({cmdIdx:i})})),
+      confirm:s.confirm,confirmNo:()=>this.setState({confirm:null}),
+      confirmYes:()=>{const f=s.confirm&&s.confirm.yes;this.setState({confirm:null});f&&f()},
+      vwSm:s.vw==='sm',vwNotSm:s.vw!=='sm',firstRun:!!this.props.firstRun};
+  }
+  dashVals(){const s=this.state,eff=this.props.firstRun?[]:this.biz,N=eff.length,ST=this.ST();
+    const cnt={live:0,susp:0,pend:0,nf:0};eff.forEach(b=>cnt[b.status]++);
+    const t14=this.trend.slice(76),tot14=[],lv14=[];for(let i=0;i<14;i++){tot14.push(488+i*1.8);lv14.push(tot14[i]-t14[i]-18)}
+    const mkSp=(arr,c,f)=>{const L=this.lineP(arr,96,30,3);return {line:L.d,area:L.area,sparkC:c,sparkFill:f}};
+    const kpis=[
+      {label:'Total businesses',value:''+N,delta:'+6 wk',dC:'var(--accentInk)',dBg:'var(--accentSoft)',sub:'Across 41 client accounts',...mkSp(tot14,'var(--accentInk)','rgba(99,102,241,.13)')},
+      {label:'Live',value:''+cnt.live,delta:'+3',dC:'var(--ok)',dBg:'var(--okBg)',sub:(N?(cnt.live/N*100).toFixed(1):'0')+'% of portfolio',...mkSp(lv14,'var(--ok)','rgba(24,160,110,.12)')},
+      {label:'Suspended',value:''+cnt.susp,delta:'−2',dC:'var(--ok)',dBg:'var(--okBg)',sub:'2 recovered today',...mkSp(t14,'var(--bad)','rgba(220,60,50,.10)')},
+      {label:'Last full check',value:'09:00',delta:'On time',dC:'var(--na)',dBg:'var(--naBg)',sub:this.rel(this.sinceNine(Date.now()))+' · '+N+' checked',line:'',area:'',sparkC:'',sparkFill:''}];
+    const t30=this.trend.slice(60),TL=this.lineP(t30,640,170,10);
+    const order=['live','susp','pend','nf'],C=339.292;let acc=0;
+    const donutSegs=order.map(k=>{const len=N?cnt[k]/N*C:0;const o={color:ST[k].c,dash:len.toFixed(1)+' '+(C-len).toFixed(1),off:(-acc).toFixed(1)};acc+=len;return o});
+    const legend=order.map(k=>({l:ST[k].l,c:ST[k].c,n:cnt[k],p:N?(cnt[k]/N*100).toFixed(1)+'%':'0%'}));
+    const feed=this.activity.map(a=>({init:a.b.name[0],name:a.b.name,city:a.b.city+', '+a.b.stt,when:this.ago(a.at),
+      fromL:ST[a.from].l,toL:ST[a.to].l,toC:ST[a.to].c,toBg:ST[a.to].bg,toBd:ST[a.to].bd,
+      view:()=>{this.nav('businesses');this.openDrawer(a.b)}}));
+    const xl=[];for(let i=0;i<5;i++){xl.push(new Date(Date.now()-(29-i*7.25)*864e5).toLocaleDateString('en-US',{month:'short',day:'numeric'}))}
+    const wd=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    return {kpis,trendLine:TL.d,trendArea:TL.area,trendCx:TL.lx,trendCy:TL.ly,trendXL:xl,trendNow:''+t30[t30.length-1],
+      donutSegs,legend,donutPct:(N?(cnt.live/N*100).toFixed(1):'0')+'%',feed,
+      dashCols:s.vw==='lg'?'1.65fr 1fr':'1fr',dashSkel:!s.loaded.dashboard,dashReady:!!s.loaded.dashboard,
+      todayLine:wd+' · '+N+' listings monitored · daily check at 09:00',
+      goSched:()=>this.nav('schedule'),goBiz:()=>this.nav('businesses'),goNotif:()=>this.nav('notifications'),
+      schedTimeL:s.schedTime,tzShort:'CDT',emailsN:s.emails.length+' recipients',modeL:s.nMode==='instant'?'Instant alerts':'Daily digest'};
+  }
+  renderVals(){
+    return Object.assign({},this.coreVals(),this.dashVals(),
+      this.bizVals?this.bizVals():{},this.dwVals?this.dwVals():{},this.exVals?this.exVals():{},
+      this.impVals?this.impVals():{},this.rpVals?this.rpVals():{},this.nfVals?this.nfVals():{},
+      this.scVals?this.scVals():{},this.setVals?this.setVals():{},this.authVals?this.authVals():{});
+  }
+  filtered(){const s=this.state;const eff=this.props.firstRun?[]:this.biz;const q=s.search.toLowerCase();
+    let L=eff.filter(b=>(!q||b.name.toLowerCase().includes(q)||b.city.toLowerCase().includes(q)||b.cat.toLowerCase().includes(q))
+      &&(!s.fStatus.length||s.fStatus.indexOf(b.status)>-1)&&(!s.fCity||b.city===s.fCity)&&(!s.fCat||b.cat===s.fCat));
+    const dir=s.sortDir,by=s.sortBy;
+    L=L.slice().sort((a,b)=>{let r=0;
+      if(by==='name')r=a.name.localeCompare(b.name);else if(by==='city')r=a.city.localeCompare(b.city);
+      else if(by==='checked')r=a.lastMin-b.lastMin;else if(by==='changed')r=b.chAt-a.chAt;else if(by==='status')r=a.status.localeCompare(b.status);
+      return r*dir});
+    return L}
+  setView(v){const m={all:{fStatus:[],search:''},susp:{fStatus:['susp']},attn:{fStatus:['susp','nf']},recent:{fStatus:[],sortBy:'changed',sortDir:1}};
+    this.setState({view:v,page:1,...m[v]})}
+  rowCheck(b,e){e&&e.stopPropagation();if(this.state.rowBusy[b.id])return;
+    this.setState(s=>({rowBusy:{...s.rowBusy,[b.id]:1}}));
+    setTimeout(()=>{b.lastMin=0;if(b.status==='pend'){b.status='live';b.chAt=Date.now()}
+      this.setState(s=>{const rb={...s.rowBusy};delete rb[b.id];return {rowBusy:rb,just:{...s.just,[b.id]:1},tick:s.tick+1}});
+      setTimeout(()=>this.setState(s=>{const j={...s.just};delete j[b.id];return {just:j}}),1500)},1150)}
+  delBiz(b){this.setState({confirm:{title:'Delete "'+b.name+'"?',msg:'This removes the listing and its check history from GMB Guard. The Google Business Profile itself is not affected.',label:'Delete listing',
+    yes:()=>{const idx=this.biz.indexOf(b);this.deleted={b,idx};this.biz.splice(idx,1);
+      this.setState(s=>({tick:s.tick+1,drawer:s.drawer===b.id?null:s.drawer}));
+      this.toast('Listing deleted','"'+b.name+'" was removed.','Undo',()=>{if(this.deleted){this.biz.splice(this.deleted.idx,0,this.deleted.b);this.deleted=null;this.setState(s=>({tick:s.tick+1}))}},'na')}}})}
+  bulk(kind){const s=this.state;const ids=Object.keys(s.sel).filter(k=>s.sel[k]).map(Number);const items=this.biz.filter(b=>ids.indexOf(b.id)>-1);
+    if(kind==='check'){const rb={...s.rowBusy};ids.forEach(id=>rb[id]=1);this.setState({rowBusy:rb});
+      setTimeout(()=>{items.forEach(b=>b.lastMin=0);this.setState(x=>{const r={...x.rowBusy};ids.forEach(id=>delete r[id]);return {rowBusy:r,sel:{},tick:x.tick+1}});
+        this.toast('Check complete',ids.length+' listings checked — no status changes.')},1400)}
+    else if(kind==='tag'){items.forEach(b=>b.tag='Priority');this.setState(x=>({sel:{},tick:x.tick+1}));this.toast('Tag added','"Priority" tag added to '+ids.length+' listings.')}
+    else if(kind==='export')this.setState({exOpen:true,exScope:'selected'});
+    else if(kind==='del'){this.setState({confirm:{title:'Delete '+ids.length+' listings?',msg:'This removes the selected listings and their history from GMB Guard. Google profiles are not affected.',label:'Delete '+ids.length,
+      yes:()=>{this.biz=this.biz.filter(b=>ids.indexOf(b.id)===-1);this.setState(x=>({sel:{},tick:x.tick+1}));this.toast(ids.length+' listings deleted','',null,null,'na')}}})}}
+  openBizModal(b){const f=b?{name:b.name,addr:b.addr,city:b.city,cat:b.cat,url:b.urlC||'',tag:b.tag||''}:{name:'',addr:'',city:'',cat:'',url:'',tag:''};
+    this.setState({bizModal:{mode:b?'edit':'add',id:b?b.id:null,f,err:{}},menuRow:null})}
+  bmSet(k){return e=>this.setState(x=>({bizModal:{...x.bizModal,f:{...x.bizModal.f,[k]:e.target.value},err:{...x.bizModal.err,[k]:undefined}}}))}
+  saveBiz(){const m=this.state.bizModal;if(!m)return;const f=m.f,err={};
+    if(!f.name.trim())err.name='Business name is required';
+    if(!f.city.trim())err.city='City is required';
+    if(f.url&&!/^https?:\/\//.test(f.url))err.url='Must start with http:// or https://';
+    if(Object.keys(err).length){this.setState({bizModal:{...m,err}});return}
+    if(m.mode==='add'){const id=Math.max.apply(0,this.biz.map(b=>b.id))+1;
+      const nb={id,name:f.name.trim(),addr:f.addr.trim(),city:f.city.trim(),stt:'',cat:f.cat.trim()||'Uncategorized',status:'pend',lastMin:0,chAt:Date.now(),up:100,tag:f.tag||null,urlC:f.url.trim()||null};
+      this.biz.unshift(nb);this.setState(s=>({bizModal:null,page:1,tick:s.tick+1}));
+      this.toast('Business added','"'+nb.name+'" queued for its first check.');
+      setTimeout(()=>{nb.status='live';nb.lastMin=0;
+        this.setState(s=>({just:{...s.just,[id]:1},tick:s.tick+1}));
+        this.toast('First check complete','"'+nb.name+'" is Live on Google.');
+        setTimeout(()=>this.setState(s=>{const j={...s.just};delete j[id];return {just:j}}),1600)},2600)}
+    else{const b=this.biz.find(x=>x.id===m.id);if(b){b.name=f.name.trim();b.addr=f.addr.trim();b.city=f.city.trim();b.cat=f.cat.trim()||b.cat;b.tag=f.tag||null;b.urlC=f.url.trim()||null;
+      this.setState(s=>({bizModal:null,tick:s.tick+1}));this.toast('Listing updated','Changes to "'+b.name+'" saved.')}}}
+  bizVals(){const s=this.state,ST=this.ST(),IC=this.IC;
+    const eff=this.props.firstRun?[]:this.biz;
+    const cnt={live:0,susp:0,pend:0,nf:0};eff.forEach(b=>cnt[b.status]++);
+    const fl=this.filtered();const total=fl.length;
+    const maxP=Math.max(1,Math.ceil(total/s.ps));const page=Math.min(s.page,maxP);
+    const slice=fl.slice((page-1)*s.ps,page*s.ps);
+    const selIds=Object.keys(s.sel).filter(k=>s.sel[k]);const selCount=selIds.length;
+    const rows=slice.map(b=>{const st=ST[b.status],sel=!!s.sel[b.id],busy=!!s.rowBusy[b.id];
+      return {id:b.id,name:b.name,addr:[b.addr,b.city,b.stt].filter(Boolean).join(', '),city:b.city,cat:b.cat,tag:b.tag||undefined,
+        url:b.urlC||('https://maps.google.com/?q='+encodeURIComponent(b.name+' '+b.city)),
+        stL:st.l,stC:st.c,stBg:st.bg,stBd:st.bd,anim:s.just[b.id]?'pop .55s ease':undefined,
+        checked:this.rel(b.lastMin),changed:this.fdate(b.chAt),busy,notBusy:!busy,
+        sel,selA:sel?'true':'false',cbBd:sel?'var(--accent)':'var(--border2)',cbBg:sel?'var(--accent)':'var(--inputBg)',cbOp:sel?1:0,
+        rowBg:sel?'var(--accentSoft)':'transparent',spin:busy?'spin 1s linear infinite':undefined,
+        menuOpen:s.menuRow===b.id,
+        open:()=>this.openDrawer(b),stopClick:e=>e.stopPropagation(),
+        toggleSel:e=>{e.stopPropagation();this.setState(x=>({sel:{...x.sel,[b.id]:!x.sel[b.id]}}))},
+        check:e=>this.rowCheck(b,e),
+        menuBtn:e=>{e.stopPropagation();this.setState(x=>({menuRow:x.menuRow===b.id?null:b.id}))},
+        mCheck:e=>{e.stopPropagation();this.setState({menuRow:null});this.rowCheck(b)},
+        mHist:e=>{e.stopPropagation();this.openDrawer(b)},
+        mEditD:e=>{e.stopPropagation();this.openBizModal(b)},
+        mEdit:e=>{e.stopPropagation();this.setState({menuRow:null,dTab:'notes'});this.openDrawer(b)},
+        mDel:e=>{e.stopPropagation();this.setState({menuRow:null});this.delBiz(b)}}});
+    const allSel=slice.length>0&&slice.every(b=>s.sel[b.id]);
+    const chips=[['','All',eff.length],['live','Live',cnt.live],['susp','Suspended',cnt.susp],['pend','Pending',cnt.pend],['nf','Not found',cnt.nf]].map(c=>{
+      const act=c[0]===''?s.fStatus.length===0:s.fStatus.indexOf(c[0])>-1;
+      return {l:c[1],n:c[2],bg:act?'var(--accentSoft)':'var(--surface)',bd:act?'var(--accentBorder)':'var(--border2)',c:act?'var(--accentInk)':'var(--muted)',
+        go:()=>{if(c[0]==='')this.setState({fStatus:[],page:1});else this.setState(x=>{const f=x.fStatus.slice();const i=f.indexOf(c[0]);i>-1?f.splice(i,1):f.push(c[0]);return {fStatus:f,page:1}})}}});
+    const views=[['all','All listings'],['susp','Suspended only'],['attn','Needs attention'],['recent','Recently changed']].map(v=>({l:v[1],
+      bg:s.view===v[0]?'var(--surface)':'transparent',c:s.view===v[0]?'var(--text)':'var(--muted)',sh:s.view===v[0]?'var(--shadow)':'none',bd:s.view===v[0]?'var(--border2)':'transparent',
+      go:()=>this.setView(v[0])}));
+    const cities=[...new Set(this.biz.map(b=>b.city))].sort().map(c=>({v:c,l:c}));
+    const cats=[...new Set(this.biz.map(b=>b.cat))].sort().map(c=>({v:c,l:c}));
+    const cols=s.cols;
+    const tc=['34px','minmax(210px,2.2fr)'];if(cols.city)tc.push('96px');if(cols.cat)tc.push('120px');if(cols.url)tc.push('46px');tc.push('126px');if(cols.checked)tc.push('118px');if(cols.changed)tc.push('108px');tc.push('40px');
+    const colList=[['city','City'],['cat','Category'],['url','Profile URL'],['checked','Last checked'],['changed','Status changed']].map(c=>({l:c[1],on:cols[c[0]],cbBd:cols[c[0]]?'var(--accent)':'var(--border2)',cbBg:cols[c[0]]?'var(--accent)':'var(--inputBg)',cbOp:cols[c[0]]?1:0,
+      go:()=>this.setState(x=>({cols:{...x.cols,[c[0]]:!x.cols[c[0]]}}))}));
+    const sortBtn=(key,label)=>({l:label,arrow:s.sortBy===key?(s.sortDir===1?'↑':'↓'):'',c:s.sortBy===key?'var(--text)':'var(--muted)',
+      go:()=>this.setState(x=>({sortBy:key,sortDir:x.sortBy===key?-x.sortDir:1}))});
+    const start=total?(page-1)*s.ps+1:0,end=Math.min(page*s.ps,total);
+    const pages=[];const push=(n)=>pages.push({l:''+n,n,active:n===page,bg:n===page?'var(--accent)':'transparent',c:n===page?'var(--accentFg)':'var(--muted)',go:()=>this.setState({page:n})});
+    if(maxP<=7){for(let i=1;i<=maxP;i++)push(i)}else{push(1);if(page>3)pages.push({dots:true});for(let i=Math.max(2,page-1);i<=Math.min(maxP-1,page+1);i++)push(i);if(page<maxP-2)pages.push({dots:true});push(maxP)}
+    return {rows,bizTotal:eff.length,bizShown:total+' of '+eff.length,chips,views,cityOpts:cities,catOpts:cats,
+      searchVal:s.search,onSearch:e=>this.setState({search:e.target.value,page:1}),
+      fCity:s.fCity,onCity:e=>this.setState({fCity:e.target.value,page:1}),fCat:s.fCat,onCat:e=>this.setState({fCat:e.target.value,page:1}),
+      hasFilters:!!(s.search||s.fStatus.length||s.fCity||s.fCat),clearFilters:()=>this.setState({search:'',fStatus:[],fCity:'',fCat:'',page:1,view:'all'}),
+      tableCols:tc.join(' '),tableMinW:s.vw==='sm'?'0':'880px',
+      colsOpen:s.colsOpen,toggleCols:e=>{e.stopPropagation();this.setState(x=>({colsOpen:!x.colsOpen,menuRow:null}))},colList,
+      colCity:cols.city,colCat:cols.cat,colUrl:cols.url,colChecked:cols.checked,colChanged:cols.changed,
+      sName:sortBtn('name','Business'),sCity:sortBtn('city','City'),sChecked:sortBtn('checked','Last checked'),sChanged:sortBtn('changed','Changed'),
+      allSel,allSelA:allSel?'true':'false',allCbBd:allSel?'var(--accent)':'var(--border2)',allCbBg:allSel?'var(--accent)':'var(--inputBg)',allCbOp:allSel?1:0,
+      toggleAll:()=>this.setState(x=>{const sel={...x.sel};slice.forEach(b=>sel[b.id]=!allSel);return {sel}}),
+      selCount,hasSel:selCount>0,clearSel:()=>this.setState({sel:{}}),
+      bulkCheck:()=>this.bulk('check'),bulkTag:()=>this.bulk('tag'),bulkExport:()=>this.bulk('export'),bulkDel:()=>this.bulk('del'),
+      pageInfo:total?('Showing '+start+'–'+end+' of '+total):'No results',pages,
+      canPrev:page>1,canNext:page<maxP,prevPg:()=>this.setState({page:Math.max(1,page-1)}),nextPg:()=>this.setState({page:Math.min(maxP,page+1)}),
+      psVal:''+s.ps,onPs:e=>this.setState({ps:+e.target.value,page:1}),
+      bizSkel:!s.loaded.businesses,bizReady:!!s.loaded.businesses,
+      emptyNone:!!s.loaded.businesses&&total===0&&eff.length>0,emptyFirst:!!s.loaded.businesses&&eff.length===0,
+      goImport:()=>{this.setState({impStep:1,impPhase:'idle'});this.nav('import')},openExport:()=>this.setState({exOpen:true}),
+      saveView:()=>this.toast('View saved','Current filters saved as a custom view.'),
+      openAdd:()=>this.openBizModal(null),bmOpen:!!s.bizModal,
+      bmTitle:s.bizModal&&s.bizModal.mode==='edit'?'Edit listing':'Add business',
+      bmLabel:s.bizModal&&s.bizModal.mode==='edit'?'Save changes':'Add and start monitoring',
+      bmName:s.bizModal?s.bizModal.f.name:'',bmAddr:s.bizModal?s.bizModal.f.addr:'',bmCity:s.bizModal?s.bizModal.f.city:'',bmCat:s.bizModal?s.bizModal.f.cat:'',bmUrl:s.bizModal?s.bizModal.f.url:'',bmTag:s.bizModal?s.bizModal.f.tag:'',
+      onBmName:this.bmSet('name'),onBmAddr:this.bmSet('addr'),onBmCity:this.bmSet('city'),onBmCat:this.bmSet('cat'),onBmUrl:this.bmSet('url'),onBmTag:this.bmSet('tag'),
+      bmErrName:s.bizModal?s.bizModal.err.name:undefined,bmErrCity:s.bizModal?s.bizModal.err.city:undefined,bmErrUrl:s.bizModal?s.bizModal.err.url:undefined,
+      bmNameBd:s.bizModal&&s.bizModal.err.name?'var(--bad)':'var(--border2)',bmCityBd:s.bizModal&&s.bizModal.err.city?'var(--bad)':'var(--border2)',bmUrlBd:s.bizModal&&s.bizModal.err.url?'var(--bad)':'var(--border2)',
+      closeBm:()=>this.setState({bizModal:null}),saveBm:()=>this.saveBiz(),
+      prevColSpan:'1/-1'};
+  }
+  dwVals(){const s=this.state;const b=this.biz.find(x=>x.id===s.drawer);if(!b)return {dw:null};
+    const ST=this.ST(),st=ST[b.status];
+    const seq=[b.status];let cur=b.status;
+    for(let i=0;i<3+(b.id%2);i++){cur=cur==='live'?(i===1&&b.id%4===0?'nf':'susp'):'live';seq.push(cur)}
+    let t=b.chAt;const events=seq.slice(0,-1).map((to,i)=>{const from=seq[i+1];const at=t;t-=(6+((b.id*7+i*13)%38))*864e5;
+      return {toL:ST[to].l,fromL:ST[from].l,c:ST[to].c,bg:ST[to].bg,date:this.fdate(at),
+        note:to==='susp'?'Email alert sent to 2 recipients':to==='live'?'Recovered after '+(2+((b.id+i)%9))+' days':'Profile not returned in Maps results'}});
+    events.push({toL:'Added to GMB Guard',fromL:'',c:'var(--accentInk)',bg:'var(--accentSoft)',date:this.fdate(t),note:'Imported from agency-listings.xlsx'});
+    const logs=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);d.setHours(9,0,0,0);
+      logs.push({t:this.fdt(d.getTime()),r:i===0?st.l:(i===2&&b.status==='live'?'Suspended':st.l),c:i===2&&b.status==='live'?'var(--bad)':st.c,ms:(380+((b.id*31+i*77)%1400))+' ms',mode:i===0&&b.lastMin<10?'Manual':'Auto'})}
+    const note=s.notes[b.id]||'';
+    return {dw:{name:b.name,addr:b.addr,cityL:[b.city,b.stt].filter(Boolean).join(', '),cat:b.cat,up:b.up.toFixed(1)+'%',
+      url:b.urlC||('https://maps.google.com/?q='+encodeURIComponent(b.name+' '+b.city)),
+      stL:st.l,stC:st.c,stBg:st.bg,stBd:st.bd,checked:this.rel(b.lastMin),changed:this.fdate(b.chAt),
+      busy:!!s.rowBusy[b.id],notBusy:!s.rowBusy[b.id],events,logs,note,
+      tabHist:s.dTab==='history',tabLog:s.dTab==='log',tabNotes:s.dTab==='notes',
+      thC:s.dTab==='history'?'var(--text)':'var(--muted)',thB:s.dTab==='history'?'var(--accent)':'transparent',
+      tlC:s.dTab==='log'?'var(--text)':'var(--muted)',tlB:s.dTab==='log'?'var(--accent)':'transparent',
+      tnC:s.dTab==='notes'?'var(--text)':'var(--muted)',tnB:s.dTab==='notes'?'var(--accent)':'transparent',
+      goHist:()=>this.setState({dTab:'history'}),goLog:()=>this.setState({dTab:'log'}),goNotes:()=>this.setState({dTab:'notes'}),
+      onNote:e=>this.setState(x=>({notes:{...x.notes,[b.id]:e.target.value}})),
+      noteHint:note?'Saved automatically':'Visible to your team only',
+      check:()=>this.rowCheck(b),edit:()=>this.openBizModal(b),del:()=>this.delBiz(b)},
+      closeDrawer:()=>this.setState({drawer:null})};
+  }
+  exVals(){const s=this.state;const selN=Object.keys(s.sel).filter(k=>s.sel[k]).length;const filtN=this.filtered().length;
+    const scopes=[['all','All businesses',this.biz.length+' rows'],['filtered','Current filter',filtN+' rows'],['selected','Selected',selN+' rows']].map(o=>{
+      const act=s.exScope===o[0];return {l:o[1],sub:o[2],dotBd:act?'var(--accent)':'var(--border2)',dotBg:act?'var(--accent)':'transparent',
+        bg:act?'var(--accentSoft)':'var(--surface)',bd:act?'var(--accentBorder)':'var(--border)',go:()=>this.setState({exScope:o[0]})}});
+    const fmts=[['xlsx','.xlsx','Excel workbook'],['csv','.csv','Plain data']].map(o=>{const act=s.exFmt===o[0];
+      return {l:o[1],sub:o[2],bg:act?'var(--accentSoft)':'var(--surface)',bd:act?'var(--accentBorder)':'var(--border2)',c:act?'var(--accentInk)':'var(--muted)',go:()=>this.setState({exFmt:o[0]})}});
+    const colNames={name:'Business name',city:'City',cat:'Category',url:'Profile URL',status:'Status',checked:'Last checked',changed:'Status changed',up:'Uptime %'};
+    const exCols=Object.keys(colNames).map(k=>{const on=s.exCols[k];return {l:colNames[k],bg:on?'var(--accentSoft)':'var(--surface)',bd:on?'var(--accentBorder)':'var(--border2)',c:on?'var(--accentInk)':'var(--muted)',
+      go:()=>this.setState(x=>({exCols:{...x.exCols,[k]:!x.exCols[k]}}))}});
+    const n=s.exScope==='all'?this.biz.length:s.exScope==='filtered'?filtN:selN;
+    return {exOpen:s.exOpen,closeExport:()=>this.setState({exOpen:false}),exScopes:scopes,exFmts:fmts,exColList:exCols,
+      exHist:s.exHist,exHistA:s.exHist?'true':'false',exHistBg:s.exHist?'var(--accent)':'var(--border2)',exHistL:s.exHist?'17.5px':'2.5px',
+      toggleExHist:()=>this.setState(x=>({exHist:!x.exHist})),
+      exLabel:'Export '+n+' rows',
+      doExport:()=>{this.setState({exOpen:false});setTimeout(()=>this.toast('Export ready','businesses-'+new Date().toISOString().slice(0,10)+'.'+s.exFmt+' ('+n+' rows)','Download',()=>{}),900)}};
+  }
+  impVals(){const s=this.state,IC=this.IC;
+    const fields=[['name','Business name'],['addr','Address'],['city','City'],['cat','Category'],['url','Profile URL'],['tag','Tag'],['','Ignore column']];
+    const srcCols=[['Business Name','name'],['Street Address','addr'],['City','city'],['Category','cat'],['Maps URL','url'],['Client Tag','tag']];
+    const mapRows=srcCols.map(sc=>{const cur=s.impMap[sc[0]]!==undefined?s.impMap[sc[0]]:sc[1];
+      return {src:sc[0],val:cur,auto:cur===sc[1],opts:fields.map(f=>({v:f[0],l:f[1]})),
+        onSel:e=>this.setState(x=>({impMap:{...x.impMap,[sc[0]]:e.target.value}}))}});
+    const preview=[['Bright Smile Dental Studio','1420 S Lamar Blvd','Austin','Dentist'],['Lone Star Plumbing Co.','980 Main St','Dallas','Plumber'],['Coastal Kitchen','212 Ocean Dr','Miami','Restaurant'],['Summit Law Group','77 Peachtree St','Atlanta','Law firm'],['Riverbend Auto Care','3300 Broadway','Nashville','Auto repair']].map(r=>({a:r[0],b:r[1],c:r[2],d:r[3]}));
+    const errs=[[18,'Profile URL','Not a valid Google Maps link','Use the share link from the profile'],[71,'City','Empty cell','Add the listing city'],[104,'Business name','Duplicate of row 61','Will be skipped unless renamed'],[233,'Category','Unknown category "Dentst"','Did you mean "Dentist"?'],[301,'Profile URL','Link returns 404','Re-copy from Google Business Profile'],[356,'Address','Missing street number','Add full street address']];
+    const errRows=errs.map((e,i)=>({row:'Row '+e[0],field:e[1],issue:e[2],fix:e[3],fixed:!!s.impFixed[i],
+      fixL:s.impFixed[i]?'Fixed':'Fix',fixC:s.impFixed[i]?'var(--ok)':'var(--accentInk)',fixBg:s.impFixed[i]?'var(--okBg)':'var(--accentSoft)',fixBd:s.impFixed[i]?'var(--okBd)':'var(--accentBorder)',
+      doFix:()=>this.setState(x=>({impFixed:{...x.impFixed,[i]:!x.impFixed[i]}}))}));
+    const nFixed=Object.keys(s.impFixed).filter(k=>s.impFixed[k]).length;
+    const nErr=6-nFixed,nDup=14,nValid=486+nFixed;
+    const steps=[[1,'Upload file'],[2,'Map columns'],[3,'Validate']].map(st=>{const done=s.impStep>st[0],act=s.impStep===st[0];
+      return {n:done?'✓':''+st[0],l:st[1],bg:done||act?'var(--accent)':'var(--surface2)',c:done||act?'var(--accentFg)':'var(--faint)',
+        lc:act?'var(--text)':'var(--muted)',lw:act?800:600,ln:done?'var(--accent)':'var(--border2)'}});
+    return {impStep1:s.impStep===1,impStep2:s.impStep===2,impStep3:s.impStep===3,impStep4:s.impStep===4,
+      impSteps:steps,impMapRows:mapRows,impPreview:preview,impErrRows:errRows,
+      impValid:''+nValid,impDup:''+nDup,impErr:''+nErr,
+      impFixAll:()=>this.setState({impFixed:{0:1,1:1,2:1,3:1,4:1,5:1}}),
+      impNext2:()=>{this.setState({impStep:2});this.toast('File parsed','agency-listings.xlsx · 512 rows · 6 columns detected')},
+      impBack1:()=>this.setState({impStep:1}),impNext3:()=>this.setState({impStep:3}),impBack2:()=>this.setState({impStep:2}),
+      impLabel:'Import '+nValid+' listings',
+      impRun:()=>{this.setState({impStep:4,impProg:0,impPhase:'run'});
+        this.imI=setInterval(()=>{const p=this.state.impProg+2+((Math.random()*4)|0);
+          if(p>=100){clearInterval(this.imI);this.setState({impProg:100,impPhase:'done'});this.toast('Import complete',nValid+' listings imported, '+nDup+' duplicates skipped.','View businesses',()=>this.nav('businesses'))}
+          else this.setState({impProg:p})},60)},
+      impRunning:s.impPhase==='run',impDoneP:s.impPhase==='done',
+      impProgPct:s.impProg+'%',impProgN:Math.round(486*s.impProg/100)+' / 486',
+      impValidDone:''+nValid,
+      impGoBiz:()=>this.nav('businesses'),
+      impAgain:()=>this.setState({impStep:1,impPhase:'idle',impProg:0,impFixed:{}}),
+      backToBiz:()=>this.nav('businesses'),
+      dlTemplate:()=>this.toast('Template downloaded','gmb-guard-template.xlsx with 6 example rows.')};
+  }
+  rpVals(){const s=this.state,ST=this.ST();
+    let days=s.rpRange==='7d'?7:s.rpRange==='90d'?90:30;
+    if(s.rpRange==='Custom'){const df=Math.round((new Date(s.rpTo)-new Date(s.rpFrom))/864e5)+1;if(df>0)days=Math.max(7,Math.min(90,df))}
+    const arr=this.trend.slice(90-Math.min(90,days));
+    const L=this.lineP(arr,640,170,10);
+    const ranges=['7d','30d','90d','Custom'].map(r=>({l:r,bg:s.rpRange===r?'var(--surface)':'transparent',c:s.rpRange===r?'var(--text)':'var(--muted)',sh:s.rpRange===r?'var(--shadow)':'none',bd:s.rpRange===r?'var(--border2)':'transparent',go:()=>this.setState({rpRange:r})}));
+    const cnt={live:0,susp:0,pend:0,nf:0};this.biz.forEach(b=>cnt[b.status]++);const N=this.biz.length||1;
+    const order=['live','susp','pend','nf'],C=339.292;let acc=0;
+    const segs=order.map(k=>{const len=cnt[k]/N*C;const o={color:ST[k].c,dash:len.toFixed(1)+' '+(C-len).toFixed(1),off:(-acc).toFixed(1)};acc+=len;return o});
+    const legend=order.map(k=>({l:ST[k].l,c:ST[k].c,n:cnt[k],p:(cnt[k]/N*100).toFixed(1)+'%'}));
+    const byCity={};this.biz.forEach(b=>{if(b.status==='susp'||b.status==='nf')byCity[b.city]=(byCity[b.city]||0)+1});
+    const cityArr=Object.keys(byCity).map(c=>({c,n:byCity[c]})).sort((a,b)=>b.n-a.n).slice(0,6);
+    const mx=cityArr.length?cityArr[0].n:1;
+    const cityBars=cityArr.map(x=>({l:x.c,n:''+x.n,w:Math.round(x.n/mx*100)+'%'}));
+    const upRows=this.biz.slice().sort((a,b)=>a.up-b.up).slice(0,8).map(b=>({name:b.name,city:b.city,up:b.up.toFixed(1)+'%',w:Math.max(4,Math.round((b.up-55)/45*100))+'%',c:b.up<80?'var(--bad)':b.up<95?'var(--warn)':'var(--ok)',inc:''+(1+(b.id%4))}));
+    const susBiz=this.biz.filter(b=>b.status==='susp').slice(0,6);
+    const recBiz=this.biz.filter(b=>b.status==='live').slice(0,3);
+    const evts=[];
+    susBiz.forEach((b,i)=>{evts.push({name:b.name,city:b.city+', '+b.stt,on:this.fdate(b.chAt),dur:(1+((b.id*3)%21))+' days',rec:'—',stL:'Still suspended',stC:'var(--bad)',stBg:'var(--badBg)',stBd:'var(--badBd)'})});
+    recBiz.forEach((b,i)=>{const d=3+((b.id*7)%14);evts.push({name:b.name,city:b.city+', '+b.stt,on:this.fdate(b.chAt-d*864e5),dur:d+' days',rec:this.fdate(b.chAt),stL:'Recovered',stC:'var(--ok)',stBg:'var(--okBg)',stBd:'var(--okBd)'})});
+    const xl=[];const k=Math.max(1,Math.round(days/4));
+    for(let i=0;i<5;i++){xl.push(new Date(Date.now()-(days-1-Math.min(days-1,i*k))*864e5).toLocaleDateString('en-US',{month:'short',day:'numeric'}))}
+    return {rpRanges:ranges,rpLine:L.d,rpArea:L.area,rpCx:L.lx,rpCy:L.ly,rpXL:xl,rpNow:''+arr[arr.length-1],
+      rpSegs:segs,rpLegend:legend,rpPct:(cnt.live/N*100).toFixed(1)+'%',cityBars,upRows,suspEvents:evts,
+      rpDays:'Last '+days+' days',rpCols:s.vw==='lg'?'1.55fr 1fr':'1fr',
+      rpCustom:s.rpRange==='Custom',rpFrom:s.rpFrom,rpTo:s.rpTo,
+      onRpFrom:e=>this.setState({rpFrom:e.target.value}),onRpTo:e=>this.setState({rpTo:e.target.value}),
+      rpExcel:()=>this.toast('Report exported','suspension-report-'+s.rpRange+'.xlsx','Download',()=>{}),
+      rpPdf:()=>this.toast('Report exported','suspension-report-'+s.rpRange+'.pdf','Download',()=>{})};
+  }
+  nfVals(){const s=this.state,ST=this.ST();
+    const prefRows=[['susp','Listing suspended','The alert that matters most — sent the moment a check finds a suspension.'],['live','Back live','Confirmation when a suspended listing recovers.'],['nf','Not found','Profile disappears from Maps results entirely.']].map(p=>{
+      const on=s.prefs[p[0]];return {l:p[1],sub:p[2],on,aria:on?'true':'false',tBg:on?'var(--accent)':'var(--border2)',knobL:on?'17.5px':'2.5px',dotC:ST[p[0]==='live'?'live':p[0]==='susp'?'susp':'nf'].c,
+        toggle:()=>{this.setState(x=>({prefs:{...x.prefs,[p[0]]:!x.prefs[p[0]]}}));this.toast('Preferences saved','',null,null,'ok')}}});
+    const emails=s.emails.map(e=>({e,rm:()=>this.setState(x=>({emails:x.emails.filter(y=>y!==e)}))}));
+    const modes=[['instant','Instant','Email per event, within a minute'],['digest','Daily digest','One summary email after the daily check']].map(m=>{const act=s.nMode===m[0];
+      return {l:m[1],sub:m[2],bg:act?'var(--accentSoft)':'var(--surface)',bd:act?'var(--accentBorder)':'var(--border)',dotBd:act?'var(--accent)':'var(--border2)',dotBg:act?'var(--accent)':'transparent',go:()=>this.setState({nMode:m[0]})}});
+    const events=['Suspended','Back live','Not found','Suspended','Back live','Suspended','Not found','Back live','Suspended','Suspended','Back live','Not found'];
+    const log=events.map((ev,i)=>{const b=this.biz[(i*47+21)%512];const st=ev==='Suspended'?ST.susp:ev==='Back live'?ST.live:ST.nf;
+      return {ev,c:st.c,bg:st.bg,bd:st.bd,name:b.name,to:s.emails[i%s.emails.length]||'alerts@northstarlocal.com',
+        when:this.fdt(Date.now()-(i*11+3)*36e5),failed:i===4,stL:i===4?'Failed':'Sent',stC:i===4?'var(--bad)':'var(--ok)',
+        resend:()=>this.toast('Alert resent','Delivered to '+(s.emails[0]||'alerts@northstarlocal.com'))}});
+    return {nPrefs:s.nTab==='prefs',nLog:s.nTab==='log',
+      nPrefsC:s.nTab==='prefs'?'var(--text)':'var(--muted)',nPrefsB:s.nTab==='prefs'?'var(--accent)':'transparent',
+      nLogC:s.nTab==='log'?'var(--text)':'var(--muted)',nLogB:s.nTab==='log'?'var(--accent)':'transparent',
+      goPrefs:()=>this.setState({nTab:'prefs'}),goLog:()=>this.setState({nTab:'log'}),
+      prefRows,emailChips:emails,emailIn:s.emailIn,onEmailIn:e=>this.setState({emailIn:e.target.value}),
+      addEmail:e=>{if(e.key&&e.key!=='Enter')return;const v=s.emailIn.trim();
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){if(v)this.toast('Invalid email','Check the address and try again.',null,null,'bad');return}
+        this.setState(x=>({emails:[...x.emails,v],emailIn:''}));this.toast('Recipient added',v+' will now receive alerts.')},
+      modes,nfFilter:s.nfFilter,onNfFilter:e=>this.setState({nfFilter:e.target.value}),
+      nfLog:s.nfFilter?log.filter(l=>l.ev===s.nfFilter):log};
+  }
+  scVals(){const s=this.state;
+    const times=[];for(let h=0;h<24;h++)times.push({v:(h<10?'0':'')+h+':00',l:(h<10?'0':'')+h+':00'});
+    const tzs=['America/New_York (EDT)','America/Chicago (CDT)','America/Denver (MDT)','America/Los_Angeles (PDT)','America/Phoenix (MST)','Europe/London (BST)'].map(t=>({v:t,l:t}));
+    const freqs=['Every 6h','Every 12h','Daily'].map(f=>({l:f,bg:s.schedFreq===f?'var(--surface)':'transparent',c:s.schedFreq===f?'var(--text)':'var(--muted)',sh:s.schedFreq===f?'var(--shadow)':'none',bd:s.schedFreq===f?'var(--border2)':'transparent',go:()=>this.setState({schedFreq:f})}));
+    const lr={live:468,susp:23,nf:12,pend:9};
+    const runs=[];for(let i=1;i<=3;i++){const d=new Date();d.setDate(d.getDate()+i);d.setHours(9,0,0,0);runs.push({t:d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+', 09:00',n:'#'+(1284+i)})}
+    return {schedTime:s.schedTime,onSchedTime:e=>this.setState({schedTime:e.target.value}),timeOpts:times,
+      schedTz:s.schedTz,onSchedTz:e=>this.setState({schedTz:e.target.value}),tzOpts:tzs,schedFreqs:freqs,
+      paused:s.paused,pausedA:s.paused?'true':'false',pauseBg:s.paused?'var(--border2)':'var(--accent)',pauseL:s.paused?'2.5px':'17.5px',
+      togglePause:()=>{const p=!s.paused;this.setState({paused:p});this.toast(p?'Automation paused':'Automation resumed',p?'No checks will run until you resume.':'Next check '+this.nextCheck().short,null,null,p?'warn':'ok')},
+      pauseLabel:s.paused?'Paused — checks will not run':'Active — running on schedule',pauseC:s.paused?'var(--warn)':'var(--ok)',
+      schedSave:()=>this.toast('Schedule saved','Daily check at '+s.schedTime+' · '+s.schedTz.split(' ')[0]),
+      lrLive:''+lr.live,lrSusp:''+lr.susp,lrNf:''+lr.nf,lrPend:''+lr.pend,
+      lrTime:'Today, 09:00 — completed in 3m 42s',upcoming:runs,estLine:this.biz.length+' listings · estimated duration ~4 min'};
+  }
+  setVals(){const s=this.state;
+    const team=s.team.map((m,i)=>({n:m.n,e:m.e,init:m.n.split(' ').map(x=>x[0]).join('').slice(0,2),r:m.r,me:m.me,notMe:!m.me,
+      roleSel:m.r,onRole:e=>{const v=e.target.value;this.setState(x=>{const t=x.team.slice();t[i]={...t[i],r:v};return {team:t}})},
+      rm:()=>this.setState(x=>({confirm:{title:'Remove '+m.n+'?',msg:m.e+' will immediately lose access to this workspace.',label:'Remove',
+        yes:()=>{this.setState(y=>({team:y.team.filter((_,j)=>j!==i)}));this.toast('Member removed',m.e,null,null,'na')}}}))}));
+    const themes=[['light','Light'],['dark','Dark'],['system','System']].map(t=>{const act=s.themePref===t[0];
+      return {v:'transparent',l:t[1],isLight:t[0]==='light',isDark:t[0]==='dark',isSys:t[0]==='system',bd:act?'var(--accent)':'var(--border2)',bw:act?'2px':'1px',c:act?'var(--text)':'var(--muted)',
+        go:()=>this.setState({themePref:t[0]})}});
+    const key='gmbg_live_sk_9f3e72c1a8b44d21';
+    return {pName:s.pName,onPName:e=>this.setState({pName:e.target.value}),
+      pEmail:s.pEmail,onPEmail:e=>this.setState({pEmail:e.target.value}),
+      pInit:s.pName.split(' ').map(x=>x[0]).join('').slice(0,2),
+      saveProfile:()=>this.toast('Profile saved','',null,null,'ok'),
+      pwOpen:s.pwOpen,togglePwOpen:()=>this.setState(x=>({pwOpen:!x.pwOpen})),
+      pwCur:s.pwCur,onPwCur:e=>this.setState({pwCur:e.target.value}),pwNew:s.pwNew,onPwNew:e=>this.setState({pwNew:e.target.value}),
+      updatePw:()=>{if(this.state.pwNew.length<8){this.toast('Password too short','New password must be at least 8 characters.',null,null,'bad');return}
+        this.setState({pwOpen:false,pwCur:'',pwNew:''});this.toast('Password updated','You will stay signed in on this device.')},
+      teamRows:team,invite:s.invite,onInvite:e=>this.setState({invite:e.target.value}),
+      inviteRole:s.inviteRole,onInviteRole:e=>this.setState({inviteRole:e.target.value}),
+      sendInvite:()=>{const v=s.invite.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){this.toast('Invalid email','Check the address and try again.',null,null,'bad');return}
+        this.setState(x=>({team:[...x.team,{n:v.split('@')[0],e:v,r:x.inviteRole,me:false}],invite:''}));this.toast('Invite sent',v+' invited as '+s.inviteRole+'.')},
+      apiKey:s.apiShow?key:'gmbg_live_sk_••••••••••••d21',apiShow:s.apiShow,
+      toggleApi:()=>this.setState(x=>({apiShow:!x.apiShow})),
+      copyApi:()=>{try{navigator.clipboard.writeText(key)}catch(e){}this.toast('API key copied','',null,null,'ok')},
+      regenApi:()=>this.setState({confirm:{title:'Regenerate API key?',msg:'The current key stops working immediately. Any integrations using it will fail until updated.',label:'Regenerate',
+        yes:()=>this.toast('New key generated','Update your integrations with the new key.',null,null,'warn')}}),
+      themeTiles:themes,
+      delAccount:()=>this.setState({confirm:{title:'Delete this account?',msg:'All 512 listings, their history, and your team access are permanently erased. This cannot be undone.',label:'Delete account',
+        yes:()=>this.toast('Request received','Account deletion is confirmed by email first.',null,null,'warn')}})};
+  }
+  authVals(){const s=this.state;const err=s.aErr;
+    const set=k=>e=>this.setState({[k]:e.target.value,aErr:{...this.state.aErr,[k]:undefined}});
+    const okEmail=v=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+    const strength=s.aPw.length>=12?3:s.aPw.length>=8?2:s.aPw.length>0?1:0;
+    return {isLogin:s.screen==='login',isSignup:s.screen==='signup',isForgot:s.screen==='forgot',
+      aEmail:s.aEmail,onAEmail:set('aEmail'),aPw:s.aPw,onAPw:set('aPw'),aName:s.aName,onAName:set('aName'),aAgency:s.aAgency,onAAgency:set('aAgency'),
+      aPwType:s.aShowPw?'text':'password',aPwEye:s.aShowPw?'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94 M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19 M14.12 14.12a3 3 0 1 1-4.24-4.24 M1 1l22 22':'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+      togglePw:()=>this.setState(x=>({aShowPw:!x.aShowPw})),
+      errEmail:err.aEmail,errPw:err.aPw,errName:err.aName,
+      emailBd:err.aEmail?'var(--bad)':'var(--border2)',pwBd:err.aPw?'var(--bad)':'var(--border2)',nameBd:err.aName?'var(--bad)':'var(--border2)',
+      aRemember:s.aRemember,aRememberA:s.aRemember?'true':'false',cbBd:s.aRemember?'var(--accent)':'var(--border2)',cbBg:s.aRemember?'var(--accent)':'var(--inputBg)',cbOp:s.aRemember?1:0,
+      toggleRemember:()=>this.setState(x=>({aRemember:!x.aRemember})),
+      pw1:strength>=1?(strength===1?'var(--bad)':strength===2?'var(--warn)':'var(--ok)'):'var(--border2)',
+      pw2:strength>=2?(strength===2?'var(--warn)':'var(--ok)'):'var(--border2)',
+      pw3:strength>=3?'var(--ok)':'var(--border2)',
+      pwHint:strength===0?'At least 8 characters':strength===1?'Too short':strength===2?'Good':'Strong',
+      doLogin:()=>{const e2={};if(!okEmail(s.aEmail))e2.aEmail='Enter a valid email address';if(s.aPw.length<8)e2.aPw='Password must be at least 8 characters';
+        if(Object.keys(e2).length){this.setState({aErr:e2});return}
+        this.nav('dashboard');this.toast('Welcome back, Sarah','Last check ran today at 09:00 — 2 status changes.')},
+      doSignup:()=>{const e2={};if(!s.aName.trim())e2.aName='Enter your name';if(!okEmail(s.aEmail))e2.aEmail='Enter a valid work email';if(s.aPw.length<8)e2.aPw='Password must be at least 8 characters';
+        if(Object.keys(e2).length){this.setState({aErr:e2});return}
+        this.nav('dashboard');this.toast('Workspace created','Import your listings to start monitoring.','Import now',()=>{this.setState({impStep:1});this.nav('import')})},
+      doForgot:()=>{if(!okEmail(s.aEmail)){this.setState({aErr:{aEmail:'Enter a valid email address'}});return}this.setState({aSent:true})},
+      aSent:s.aSent,aSentTo:s.aEmail,backToLogin:()=>this.setState({screen:'login',aSent:false,aErr:{}}),
+      goLogin:()=>this.setState({screen:'login',aErr:{},aSent:false}),goSignup:()=>this.setState({screen:'signup',aErr:{}}),goForgot:()=>this.setState({screen:'forgot',aErr:{},aSent:false}),
+      googleBtn:()=>{this.nav('dashboard');this.toast('Signed in with Google','Welcome back, Sarah.')},
+      authCols:s.vw==='lg'?'1.05fr 1fr':'1fr',authWide:s.vw==='lg',authNarrow:s.vw!=='lg',aNotSent:!s.aSent};
+  }
+  //__MORE__
+}
+</script>
+</body>
+</html>

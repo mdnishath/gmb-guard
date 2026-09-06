@@ -1,0 +1,23 @@
+# Local Postgres for development.
+#   docker compose -f deploy/docker-compose.dev.yml up -d
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gmb-tracker-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gmb
+      POSTGRES_PASSWORD: gmb
+      POSTGRES_DB: gmb_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - gmb_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gmb -d gmb_tracker"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  gmb_pgdata:

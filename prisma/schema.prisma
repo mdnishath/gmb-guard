@@ -1,0 +1,124 @@
+// GMB Tracker — Prisma schema
+//
+// Run `npx prisma migrate dev --name init` locally, and `npx prisma migrate deploy`
+// in CI / on the server. `directUrl` is used by Prisma Migrate (needs a direct,
+// non-pooled connection). `url` is what the app uses at runtime.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ListingStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum AlertChannel {
+  TELEGRAM
+  EMAIL
+}
+
+enum AlertStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum CheckTrigger {
+  CRON
+  MANUAL
+}
+
+model Listing {
+  id                String        @id @default(cuid())
+  name              String
+  placeId           String        @unique
+  cid               String?
+  address           String?
+  city              String?
+  category          String?
+  tag               String?
+  notes             String?
+  currentStatus     ListingStatus @default(ACTIVE)
+  /// When false the cron skips this listing (soft "pause monitoring").
+  monitoringEnabled Boolean       @default(true)
+  /// Last time a check produced a definitive status (not updated on transient API errors).
+  lastCheckedAt     DateTime?
+  /// Last transient error (quota, network, REQUEST_DENIED…). Cleared on the next successful check.
+  lastError         String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  auditLogs AuditLog[]
+  alertLogs AlertLog[]
+
+  @@index([currentStatus])
+  @@index([lastCheckedAt])
+  @@index([monitoringEnabled, lastCheckedAt])
+  @@index([city])
+  @@index([category])
+}
+
+model AuditLog {
+  id             String        @id @default(cuid())
+  listingId      String
+  listing        Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  previousStatus ListingStatus
+  newStatus      ListingStatus
+  /// Full Google Place Details JSON that produced this transition (for debugging / appeals).
+  rawApiResponse Json
+  checkedAt      DateTime      @default(now())
+
+  @@index([listingId, checkedAt(sort: Desc)])
+  @@index([checkedAt(sort: Desc)])
+  @@index([newStatus, checkedAt(sort: Desc)])
+}
+
+/// One row per alert delivery attempt (per channel).
+model AlertLog {
+  id             String         @id @default(cuid())
+  listingId      String?
+  listing        Listing?       @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  channel        AlertChannel
+  status         AlertStatus
+  recipient      String?
+  /// Human label, e.g. "SUSPENDED", "RECOVERED", "CLOSED", "RUN_SUMMARY"
+  event          String
+  previousStatus ListingStatus?
+  newStatus      ListingStatus?
+  error          String?
+  createdAt      DateTime       @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([listingId, createdAt(sort: Desc)])
+}
+
+/// Summary of every cron / manual "check all" run.
+model CheckRun {
+  id         String       @id @default(cuid())
+  trigger    CheckTrigger
+  startedAt  DateTime
+  finishedAt DateTime
+  durationMs Int
+  total      Int
+  checked    Int
+  changed    Int
+  errors     Int
+  skipped    Int
+
+  @@index([startedAt(sort: Desc)])
+}
+
+/// Key/value app settings (alert preferences etc.).
+model AppSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
