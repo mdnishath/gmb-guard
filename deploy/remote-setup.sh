@@ -11,13 +11,18 @@ DOMAIN="${DOMAIN:?DOMAIN is required}"
 REPO_URL="${REPO_URL:?REPO_URL is required}"
 APP_DIR="${APP_DIR:-/var/www/gmb-guard}"
 BRANCH="${BRANCH:-main}"
+PORT="${PORT:-3000}"
 export DEBIAN_FRONTEND=noninteractive
 
 log() { echo; echo "==> $*"; }
 
-log "apt packages"
+log "apt packages (only what is missing)"
 apt-get update -y -qq
-apt-get install -y -qq curl git nginx ufw build-essential python3 sqlite3 ca-certificates >/dev/null
+PKGS=""
+for p in curl git build-essential python3 sqlite3 ca-certificates; do dpkg -s "$p" >/dev/null 2>&1 || PKGS="$PKGS $p"; done
+command -v nginx >/dev/null 2>&1 || PKGS="$PKGS nginx"
+[[ -n "$PKGS" ]] && apt-get install -y -qq $PKGS >/dev/null || echo "nothing to install"
+
 
 log "Node.js 20"
 if ! command -v node >/dev/null 2>&1 || [[ "$(node -v | sed 's/v//' | cut -d. -f1)" -lt 20 ]]; then
@@ -54,7 +59,15 @@ cd "${APP_DIR}"
 if [[ -f package-lock.json ]]; then npm ci --no-audit --no-fund --loglevel=error; else npm install --no-audit --no-fund --loglevel=error; fi
 npm run build
 
+log "port check"
+if ss -ltnp 2>/dev/null | grep -q ":${PORT} "; then
+  echo "WARNING: port ${PORT} is already in use:"; ss -ltnp | grep ":${PORT} "
+  echo "Set PORT=<free port> and re-run." >&2
+  exit 1
+fi
+
 log "PM2 process"
+export PORT
 if pm2 describe gmb-tracker >/dev/null 2>&1; then
   pm2 reload ecosystem.config.cjs --update-env
 else
@@ -75,12 +88,12 @@ server {
     proxy_send_timeout 900s;
 
     location /_next/static/ {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:${PORT};
         add_header Cache-Control "public, max-age=2592000, immutable";
     }
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:${PORT};
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
@@ -92,14 +105,24 @@ server {
 }
 NGINX
 ln -sf /etc/nginx/sites-available/gmb-guard /etc/nginx/sites-enabled/gmb-guard
-rm -f /etc/nginx/sites-enabled/default
-nginx -t && systemctl reload nginx
-systemctl enable nginx >/dev/null 2>&1 || true
+# NOTE: existing sites (default, webmail, admin-panel, dns…) are left untouched.
+if nginx -t; then
+  systemctl reload nginx
+else
+  echo "nginx config test FAILED — removing our site again so the server keeps working" >&2
+  rm -f /etc/nginx/sites-enabled/gmb-guard
+  nginx -t && systemctl reload nginx
+  exit 1
+fi
 
 log "firewall"
-ufw allow OpenSSH >/dev/null
-ufw allow 'Nginx Full' >/dev/null
-ufw --force enable >/dev/null
+if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | head -1 | grep -qi active; then
+  ufw allow 80/tcp >/dev/null 2>&1 || true
+  ufw allow 443/tcp >/dev/null 2>&1 || true
+  echo "ufw active: 80/443 allowed (left otherwise untouched)"
+else
+  echo "ufw not active — leaving the firewall exactly as it is"
+fi
 
 log "daily cron"
 bash deploy/install-cron.sh
