@@ -23,7 +23,9 @@ async function runCheckStrategy(listing: Listing, settings: AppSettings): Promis
   // profile is visible on Maps but returns NOT_FOUND here ("Place ID is no
   // longer valid"). Never drop a listing on that alone — confirm on the public
   // Maps page first, and keep it ACTIVE when the page still shows it.
-  if (api.ok && api.status === 'SUSPENDED' && (listing.sourceUrl || listing.cid)) {
+  // Only when the API itself says the id is stale (NOT_FOUND). An INVALID_REQUEST
+  // means the id is malformed/unknown — there is nothing to rescue.
+  if (api.ok && api.status === 'SUSPENDED' && api.googleStatus === 'NOT_FOUND' && (listing.sourceUrl || listing.cid)) {
     const page = await checkPlaceViaMapsPage(pageId);
     if (page.ok && page.status !== 'SUSPENDED') {
       return {

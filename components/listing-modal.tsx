@@ -262,7 +262,7 @@ export function ListingModal({ mode, listing, onClose, onSaved }: { mode: 'add' 
         />
         {mode === 'edit' && f.placeId.trim() !== (listing?.placeId ?? '') ? (
           <div style={{ fontSize: 11.5, color: 'var(--warn)', marginTop: 5, fontWeight: 600 }}>
-            Changing the Place ID points monitoring at a different Google listing. Its status and last-checked time will be reset and re-checked.
+            Changing the Place ID points monitoring at a different Google listing. The stored CID and Maps link are cleared, and the status is re-checked against the new id.
           </div>
         ) : null}
         {picked ? (

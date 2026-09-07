@@ -519,9 +519,15 @@ export const listings = {
     }
   },
 
-  /** Forget the previous verdict: the listing now points at a different Google listing. */
+  /**
+   * Forget the previous verdict AND the old identity hints: after the Place ID
+   * changes, the stored CID / share link still point at the previous business,
+   * so keeping them would let a check "rescue" a listing that no longer exists.
+   */
   resetVerification(id: string): void {
-    getDb().prepare("UPDATE listings SET currentStatus = 'ACTIVE', lastCheckedAt = NULL, lastError = NULL, updatedAt = ? WHERE id = ?").run(nowIso(), id);
+    getDb()
+      .prepare("UPDATE listings SET currentStatus = 'ACTIVE', lastCheckedAt = NULL, lastError = NULL, cid = NULL, sourceUrl = NULL, updatedAt = ? WHERE id = ?")
+      .run(nowIso(), id);
   },
 
   /** Strip secrets for API responses. */
