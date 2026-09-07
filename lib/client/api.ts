@@ -258,6 +258,19 @@ export interface ResolveInput {
   mapsUrl?: string;
 }
 
+export interface EnrichResult {
+  candidates: number;
+  processed: number;
+  updated: number;
+  unchanged: number;
+  failed: number;
+  perField: Record<string, number>;
+  remaining: number;
+  nextCursor: string | null;
+  samples: Array<{ name: string; changes: Record<string, { from: string | null; to: string }> }>;
+  errors: string[];
+}
+
 export interface DuplicateGroup {
   phone: string;
   count: number;
@@ -350,13 +363,18 @@ export const api = {
       ),
     /** Fill missing cities from addresses (admin). */
     backfill: () => request<{ updated: number }>('/api/listings/backfill', { method: 'POST' }),
-    /** Pull real phone / city / address / category / website from Google (admin).
-     *  `fields` chooses what to pull; `overwrite` replaces existing values. */
-    enrich: (body: { fields?: Array<'phone' | 'city' | 'address' | 'category' | 'website'>; overwrite?: boolean; onlyMissing?: boolean; limit?: number } = {}) =>
-      request<{ candidates: number; processed: number; updated: number; failed: number; remaining: number; errors: string[] }>('/api/listings/enrich', {
-        method: 'POST',
-        body: JSON.stringify(body),
-      }),
+    /**
+     * Pull the real profile from Google (admin). `fields` chooses what to copy,
+     * `mode: 'overwrite'` replaces existing values, `scope` selects the listings.
+     */
+    enrich: (body: {
+      fields?: string[];
+      mode?: 'missing' | 'overwrite';
+      scope?: 'all' | 'selected' | 'missing-any';
+      listingIds?: string[];
+      limit?: number;
+      cursor?: string;
+    } = {}) => request<EnrichResult>('/api/listings/enrich', { method: 'POST', body: JSON.stringify(body) }),
     /** Listings that share a phone number. */
     duplicates: () => request<{ groups: DuplicateGroup[]; totalGroups: number; totalListings: number }>('/api/listings/duplicates'),
     /** Find Place IDs on Google for up to 15 rows per call. */

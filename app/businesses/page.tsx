@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useApp, errorMessage } from '@/components/app-context';
+import { EnrichModal } from '@/components/enrich-modal';
 import { ExportModal } from '@/components/export-modal';
 import { ListingModal } from '@/components/listing-modal';
 import { Checkbox, EmptyState, IC, Icon, Pager, Skeleton, StatusPill } from '@/components/ui';
@@ -40,6 +41,7 @@ function Businesses() {
   const [fStatus, setFStatus] = useState<StatusFilter>('');
   const [dups, setDups] = useState<DuplicateGroup[] | null>(null);
   const [showDups, setShowDups] = useState(false);
+  const [enrichOpen, setEnrichOpen] = useState(false);
   const [fCity, setFCity] = useState('');
   const [fCat, setFCat] = useState('');
   const [view, setView] = useState<View>('all');
@@ -302,6 +304,10 @@ function Businesses() {
           <Icon d={IC.upload} size={13} stroke={2.2} />
           <span>Import</span>
         </Link>
+        <button onClick={() => setEnrichOpen(true)} className="btn btn-outline" title="Read phone, category, address and city from each listing's Google profile">
+          <Icon d={IC.refresh} size={13} stroke={2.2} />
+          <span>Pull from Google</span>
+        </button>
         <button onClick={() => setExportOpen(true)} className="btn btn-outline">
           <Icon d={IC.download} size={13} stroke={2.2} />
           <span>Export</span>
@@ -649,6 +655,7 @@ function Businesses() {
           }}
         />
       ) : null}
+      {enrichOpen ? <EnrichModal onClose={() => setEnrichOpen(false)} selectedIds={selIds} totalCount={N} /> : null}
       {exportOpen ? <ExportModal onClose={() => setExportOpen(false)} filters={params} filteredCount={total} totalCount={N} selectedIds={selIds} /> : null}
     </div>
   );

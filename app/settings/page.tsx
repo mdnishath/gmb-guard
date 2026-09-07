@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useApp, errorMessage, type ThemePref } from '@/components/app-context';
+import { EnrichModal } from '@/components/enrich-modal';
 import { Card, IC, Icon, Skeleton, Toggle } from '@/components/ui';
 import { api, type BackupInfo, type SettingsResponse, type User, type UserRole } from '@/lib/client/api';
 import { fdt, relTime } from '@/lib/client/format';
@@ -642,90 +643,27 @@ function BackupCard() {
 
 // ---------------------------------------------------------------------------
 
-const ENRICH_FIELDS: Array<['phone' | 'city' | 'address' | 'category' | 'website', string]> = [
-  ['phone', 'Phone'],
-  ['city', 'City'],
-  ['address', 'Address'],
-  ['category', 'Category'],
-  ['website', 'Website'],
-];
 
-/** Pulls real phone / city / address / category / website from Google into the DB.
- *  A popover lets you choose which fields to pull and whether to overwrite existing
- *  (wrong) values; then it loops the API until nothing is left. */
+/** Opens the "pull details from Google" dialog (field picker + overwrite option). */
 function EnrichButton() {
-  const app = useApp();
   const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState<{ updated: number; remaining: number } | null>(null);
-  const [fields, setFields] = useState<Record<string, boolean>>({ phone: true, city: true, address: true, category: true, website: true });
-  const [overwrite, setOverwrite] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  const chosen = ENRICH_FIELDS.filter(([k]) => fields[k]).map(([k]) => k);
-
-  const run = async () => {
-    if (chosen.length === 0) {
-      app.toast('Pick at least one field', 'Choose what to pull from Google first.', { tone: 'warn' });
-      return;
-    }
-    setOpen(false);
-    setBusy(true);
-    let updated = 0;
-    let failed = 0;
-    try {
-      for (let round = 0; round < 40; round++) {
-        const r = await api.listings.enrich({ fields: chosen, overwrite, limit: 200 });
-        updated += r.updated;
-        failed += r.failed;
-        setProgress({ updated, remaining: r.remaining });
-        if (r.remaining === 0 || r.processed === 0) break;
-      }
-      app.toast('Details pulled from Google', `${updated} listing${updated === 1 ? '' : 's'} updated${failed ? `, ${failed} could not be read` : ''}.`, { tone: 'ok' });
-      app.bumpRefresh();
-    } catch (err) {
-      app.toast('Could not fetch details', errorMessage(err), { tone: 'bad' });
-    } finally {
-      setBusy(false);
-      setProgress(null);
-    }
-  };
-
-  const Check = ({ on, label, onToggle, danger }: { on: boolean; label: string; onToggle: () => void; danger?: boolean }) => (
-    <button onClick={onToggle} className="menu-item" style={{ display: 'flex', alignItems: 'center', gap: 9, width: '100%' }}>
-      <span style={{ width: 15, height: 15, borderRadius: 4, border: `1.5px solid ${on ? (danger ? 'var(--warn)' : 'var(--accent)') : 'var(--border2)'}`, background: on ? (danger ? 'var(--warn)' : 'var(--accent)') : 'var(--inputBg)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="4" style={{ opacity: on ? 1 : 0 }}><path d="M20 6 9 17l-5-5" /></svg>
-      </span>
-      <span style={{ color: danger ? 'var(--warn)' : undefined, fontWeight: danger ? 700 : undefined }}>{label}</span>
-    </button>
-  );
+  useEffect(() => {
+    api.listings
+      .stats()
+      .then((st) => setTotal(st.total))
+      .catch(() => {});
+  }, []);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <button onClick={() => (busy ? undefined : setOpen((v) => !v))} disabled={busy} className="btn btn-soft btn-sm" title="Uses 1 Google API call per listing">
-        {busy ? <Icon d={IC.spinner} size={11} stroke={3} spin /> : <Icon d={IC.download} size={12} stroke={2.2} />}
-        {busy ? `Fetching… ${progress?.updated ?? 0} updated` : 'Pull from Google'}
+    <>
+      <button onClick={() => setOpen(true)} className="btn btn-soft btn-sm" title="Uses 1 Google API call per listing">
+        <Icon d={IC.refresh} size={12} stroke={2.2} />
+        Pull phone, category &amp; address from Google
       </button>
-      {open ? (
-        <>
-          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 20 }} />
-          <div className="menu" style={{ top: 36, left: 0, width: 240, borderRadius: 12, padding: 8, zIndex: 21 }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.4, color: 'var(--faint)', padding: '2px 8px 6px' }}>Pull these fields</div>
-            {ENRICH_FIELDS.map(([k, l]) => (
-              <Check key={k} on={!!fields[k]} label={l} onToggle={() => setFields((x) => ({ ...x, [k]: !x[k] }))} />
-            ))}
-            <div style={{ borderTop: '1px solid var(--border)', margin: '6px 0' }} />
-            <Check on={overwrite} danger label="Overwrite existing values" onToggle={() => setOverwrite((v) => !v)} />
-            <div style={{ fontSize: 11, color: 'var(--faint)', padding: '2px 8px 6px', lineHeight: 1.4 }}>
-              {overwrite ? 'Replaces current values with Google’s — use this to fix wrong/duplicate phone numbers.' : 'Only fills fields that are currently empty.'}
-            </div>
-            <button onClick={() => void run()} className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 2 }}>
-              <Icon d={IC.download} size={12} stroke={2.2} />
-              Pull {chosen.length ? `${chosen.length} field${chosen.length === 1 ? '' : 's'}` : ''} from Google
-            </button>
-          </div>
-        </>
-      ) : null}
-    </div>
+      {open ? <EnrichModal onClose={() => setOpen(false)} selectedIds={[]} totalCount={total} /> : null}
+    </>
   );
 }
 
