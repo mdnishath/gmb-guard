@@ -226,6 +226,7 @@ export default function SettingsPage() {
           {isAdmin ? (
             <div style={{ display: 'flex', gap: 9, marginTop: 12, flexWrap: 'wrap' }}>
             <EnrichButton />
+            <ClearHistoryButton />
             <button
               onClick={() =>
                 void api.listings
@@ -673,6 +674,40 @@ function EnrichButton() {
     <button onClick={() => void run()} disabled={busy} className="btn btn-soft btn-sm" title="Uses 1 Google API call per listing">
       {busy ? <Icon d={IC.spinner} size={11} stroke={3} spin /> : <Icon d={IC.download} size={12} stroke={2.2} />}
       {busy ? `Fetching… ${progress?.updated ?? 0} updated` : 'Fetch phone & category from Google'}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/** Deletes recorded status changes — used after a misconfiguration polluted the report. */
+function ClearHistoryButton() {
+  const app = useApp();
+  const [busy, setBusy] = useState(false);
+
+  const run = () =>
+    app.askConfirm({
+      title: 'Clear status history?',
+      msg: 'Every recorded status change is deleted, so the suspension report and each listing’s History tab start empty. Current statuses and listings are not affected. Use this after test or misconfigured checks recorded changes that never really happened.',
+      label: 'Clear history',
+      onYes: async () => {
+        setBusy(true);
+        try {
+          const r = await api.clearHistory();
+          app.toast('History cleared', `${r.deleted} recorded status change${r.deleted === 1 ? '' : 's'} removed.`, { tone: 'na' });
+          app.bumpRefresh();
+        } catch (err) {
+          app.toast('Could not clear history', errorMessage(err), { tone: 'bad' });
+        } finally {
+          setBusy(false);
+        }
+      },
+    });
+
+  return (
+    <button onClick={run} disabled={busy} className="btn btn-outline btn-sm">
+      {busy ? <Icon d={IC.spinner} size={11} stroke={3} spin /> : <Icon d={IC.trash} size={12} stroke={2.2} />}
+      Clear status history
     </button>
   );
 }

@@ -767,6 +767,25 @@ export const auditLogs = {
     return rows.map((r) => ({ ...r, rawApiResponse: undefined }));
   },
 
+  /**
+   * Delete status-change history. `before` limits it to rows older than a date;
+   * `listingId` to one listing. Returns how many rows were removed.
+   */
+  clear(opts: { listingId?: string; before?: Date } = {}): number {
+    const clauses: string[] = [];
+    const args: unknown[] = [];
+    if (opts.listingId) {
+      clauses.push('listingId = ?');
+      args.push(opts.listingId);
+    }
+    if (opts.before) {
+      clauses.push('checkedAt < ?');
+      args.push(opts.before.toISOString());
+    }
+    const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+    return getDb().prepare(`DELETE FROM audit_logs ${where}`).run(...args).changes;
+  },
+
   recent(take = 8): AuditLogWithListing[] {
     return auditLogs.list({ page: 1, pageSize: take, includeRaw: false }).items;
   },

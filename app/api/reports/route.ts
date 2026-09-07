@@ -49,14 +49,17 @@ export async function GET(req: NextRequest) {
     const seriesMap = new Map<string, number>();
     for (let t = from.getTime(); t <= to.getTime(); t += DAY_MS) seriesMap.set(dayKey(new Date(t)), 0);
     seriesMap.set(dayKey(to), seriesMap.get(dayKey(to)) ?? 0);
-    for (const l of logs) {
-      if (l.newStatus === 'ACTIVE') continue;
-      const k = dayKey(new Date(l.checkedAt));
-      seriesMap.set(k, (seriesMap.get(k) ?? 0) + 1);
-    }
-    const series = Array.from(seriesMap.entries())
-      .sort(([a], [b]) => (a < b ? -1 : 1))
-      .map(([date, count]) => ({ date, count }));
+    // (filled in below, once short-lived flaps are known)
+    const buildSeries = (items: typeof events) => {
+      const m = new Map(seriesMap);
+      for (const e of items) {
+        const k = dayKey(new Date(e.suspendedAt));
+        m.set(k, (m.get(k) ?? 0) + 1);
+      }
+      return Array.from(m.entries())
+        .sort(([a], [b]) => (a < b ? -1 : 1))
+        .map(([date, count]) => ({ date, count }));
+    };
 
     // --- Suspension events with recovery -------------------------------------
     const byListing = new Map<string, typeof logs>();
@@ -128,17 +131,28 @@ export async function GET(req: NextRequest) {
 
     events.sort((a, b) => (a.suspendedAt < b.suspendedAt ? 1 : -1));
 
+    // A "suspension" that recovered within a few minutes is almost always a
+    // failed check rather than a real drop; keep it out of the headline numbers.
+    const FLAP_MS = 30 * 60 * 1000;
+    const flapping = events.filter((e) => e.recoveredAt !== null && e.durationMs < FLAP_MS);
+    const realEvents = events.filter((e) => !(e.recoveredAt !== null && e.durationMs < FLAP_MS));
+
     const lowestUptime = Array.from(uptime.values())
       .map((u) => ({ ...u, uptimePct: Math.max(0, Math.min(100, 100 - (u.downMs / rangeMs) * 100)) }))
       .sort((a, b) => a.uptimePct - b.uptimePct)
       .slice(0, 8);
 
+    const series = buildSeries(realEvents);
+
     return jsonOk({
       range: { from: from.toISOString(), to: to.toISOString(), days: Math.round(rangeMs / DAY_MS) },
       series,
       dropsToday: series.length ? series[series.length - 1].count : 0,
-      totalDrops: events.length,
-      events: events.slice(0, 200),
+      totalDrops: realEvents.length,
+      /** Short-lived changes excluded from the numbers above (failed checks, tests). */
+      flapping: flapping.length,
+      currentlySuspended: listings.countWhere({ status: 'SUSPENDED' }) + listings.countWhere({ status: 'CLOSED' }),
+      events: realEvents.slice(0, 200),
       distribution: listings.countByStatus(),
       total: listings.count(),
       cities: listings.affectedByCity(8),

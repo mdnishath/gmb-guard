@@ -106,7 +106,14 @@ export default function ReportsPage() {
             </Card>
             <Card style={{ minWidth: 0 }}>
               <div className="card-title">Suspension report</div>
-              <div className="card-sub">Every suspension event with duration and recovery · {data.totalDrops} in range</div>
+              <div className="card-sub">
+                Every suspension event with duration and recovery · {data.totalDrops} in range · {data.currentlySuspended} suspended right now
+                {data.flapping > 0 ? (
+                  <span title="Status changes that reverted within 30 minutes — almost always a failed check rather than a real drop, so they are left out of these numbers.">
+                    {' '}· {data.flapping} short-lived change{data.flapping === 1 ? '' : 's'} excluded
+                  </span>
+                ) : null}
+              </div>
               <div style={{ overflowX: 'auto', marginTop: 12 }}>
                 <div style={{ minWidth: 640 }}>
                   <div className="th" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1.2fr', gap: 10, padding: '8px 4px', borderBottom: '1px solid var(--border)', fontSize: 10.5 }}>

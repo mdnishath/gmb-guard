@@ -179,6 +179,8 @@ export interface ReportsResponse {
   series: Array<{ date: string; count: number }>;
   dropsToday: number;
   totalDrops: number;
+  flapping: number;
+  currentlySuspended: number;
   events: Array<{
     id: string;
     listingId: string;
@@ -360,6 +362,8 @@ export const api = {
     resolve: (rows: ResolveInput[], mode: 'auto' | 'free' = 'auto') =>
       request<{ results: ResolveResult[]; mode: 'auto' | 'free' }>('/api/listings/resolve', { method: 'POST', body: JSON.stringify({ rows, mode }) }),
   },
+  clearHistory: (body: { listingId?: string; before?: string } = {}) =>
+    request<{ deleted: number }>('/api/audit-logs/clear', { method: 'POST', body: JSON.stringify(body) }),
   auditLogs: (p: { listingId?: string; newStatus?: ListingStatus; since?: string; page?: number; pageSize?: number } = {}) =>
     request<{ items: AuditLog[]; pagination: Pagination }>(`/api/audit-logs${qs(p)}`),
   alertLogs: (p: { listingId?: string; event?: string; status?: AlertStatus; page?: number; pageSize?: number } = {}) =>
