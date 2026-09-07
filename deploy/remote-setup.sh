@@ -60,7 +60,10 @@ if [[ -f package-lock.json ]]; then npm ci --no-audit --no-fund --loglevel=error
 npm run build
 
 log "port check"
-if ss -ltnp 2>/dev/null | grep -q ":${PORT} "; then
+# Our own app already listening on this port is fine (redeploy).
+if pm2 describe gmb-tracker >/dev/null 2>&1; then
+  echo "gmb-tracker already managed by PM2 — port ${PORT} is ours"
+elif ss -ltnp 2>/dev/null | grep -q ":${PORT} "; then
   echo "WARNING: port ${PORT} is already in use:"; ss -ltnp | grep ":${PORT} "
   echo "Set PORT=<free port> and re-run." >&2
   exit 1
