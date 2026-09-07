@@ -31,19 +31,22 @@ export async function middleware(req: NextRequest) {
   const isApi = pathname.startsWith('/api/');
   const ip = clientIp(req);
 
-  if (isApi) {
-    const r = rateLimit(`api:${ip}`, 600, 60_000);
-    if (!r.ok) return tooMany(r.retryAfterSec);
-  }
-  if (/^\/api\/auth\/(login|signup)$/.test(pathname) && req.method === 'POST') {
-    const r = rateLimit(`auth:${ip}`, 10, 10 * 60_000);
-    if (!r.ok) return tooMany(r.retryAfterSec);
-  }
-
   const secret = process.env.SESSION_SECRET ?? process.env.APP_SECRET;
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   let payload = null;
   if (token && secret) payload = await verifySessionTokenEdge(token, secret);
+
+  if (/^\/api\/auth\/(login|signup)$/.test(pathname) && req.method === 'POST') {
+    const r = rateLimit(`auth:${ip}`, 10, 10 * 60_000);
+    if (!r.ok) return tooMany(r.retryAfterSec);
+  }
+  if (isApi) {
+    // Authenticated operators are trusted: a bulk "check all" legitimately fires
+    // thousands of calls from one IP, so give sessions generous headroom and keep
+    // the strict cap only for anonymous traffic (login page, probes).
+    const r = payload ? rateLimit(`api:${ip}`, 6000, 60_000) : rateLimit(`api:anon:${ip}`, 120, 60_000);
+    if (!r.ok) return tooMany(r.retryAfterSec);
+  }
 
   if (PUBLIC.some((re) => re.test(pathname))) {
     if (pathname === '/login' && payload) return NextResponse.redirect(new URL('/', req.url));

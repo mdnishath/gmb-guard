@@ -203,6 +203,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     let done = 0;
     let stopped = false;
     let failedBatches = 0;
+    let lastRefresh = 0;
 
     for (let i = 0; i < ids.length; i += BATCH) {
       if (checkAbort.current) {
@@ -235,7 +236,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       done = Math.min(total, i + chunk.length);
       setCheckAll({ running: true, startedAt, total, done, changed: agg.changed, errors: agg.errors });
-      bumpRefresh(); // tables, drawer and dashboard reload with the fresh statuses
+      // Refresh tables/dashboard at most every 2.5s during a long run — refreshing
+      // after every batch floods the API from one IP and can trip rate limits.
+      const nowT = Date.now();
+      if (nowT - lastRefresh > 2500) {
+        lastRefresh = nowT;
+        bumpRefresh(); // tables, drawer and dashboard reload with the fresh statuses
+      }
     }
 
     agg.skipped = total - done;
