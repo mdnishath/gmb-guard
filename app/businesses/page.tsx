@@ -15,6 +15,7 @@ type StatusFilter = '' | UiStatus;
 
 const COL_DEFS: Array<[string, string]> = [
   ['city', 'City'],
+  ['phone', 'Phone'],
   ['cat', 'Category'],
   ['url', 'Profile URL'],
   ['checked', 'Last checked'],
@@ -46,7 +47,7 @@ function Businesses() {
   const [ps, setPs] = useState(25);
   const [sortBy, setSortBy] = useState('name');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const [cols, setCols] = useState<Record<string, boolean>>({ city: true, cat: true, url: true, checked: true, changed: true });
+  const [cols, setCols] = useState<Record<string, boolean>>({ city: true, phone: true, cat: true, url: true, checked: true, changed: true });
   const [colsOpen, setColsOpen] = useState(false);
   const [sel, setSel] = useState<Record<string, boolean>>({});
   const [menuRow, setMenuRow] = useState<string | null>(null);
@@ -257,8 +258,17 @@ function Businesses() {
     </button>
   );
 
+  // IDs of listings that share a phone number with at least one other listing
+  // (computed across the whole database, not just the current page).
+  const dupIds = useMemo(() => {
+    const s = new Set<string>();
+    (dups ?? []).forEach((g) => g.listings.forEach((l) => s.add(l.id)));
+    return s;
+  }, [dups]);
+
   const tc = ['34px', 'minmax(210px,2.2fr)'];
   if (cols.city) tc.push('110px');
+  if (cols.phone) tc.push('150px');
   if (cols.cat) tc.push('120px');
   if (cols.url) tc.push('46px');
   tc.push('126px');
@@ -266,7 +276,7 @@ function Businesses() {
   if (cols.changed) tc.push('108px');
   tc.push('40px');
   const tableCols = tc.join(' ');
-  const tableMinW = tc.length > 7 ? 900 : 700;
+  const tableMinW = tc.length > 8 ? 1020 : tc.length > 7 ? 900 : 720;
 
   const allSel = !!items && items.length > 0 && items.every((b) => sel[b.id]);
   const total = pag?.total ?? 0;
@@ -472,6 +482,7 @@ function Businesses() {
                       />
                       {sortBtn('name', 'Business')}
                       {cols.city ? sortBtn('city', 'City') : null}
+                      {cols.phone ? <span>Phone</span> : null}
                       {cols.cat ? sortBtn('category', 'Category') : null}
                       {cols.url ? <span>URL</span> : null}
                       {sortBtn('currentStatus', 'Status')}
@@ -511,6 +522,20 @@ function Businesses() {
                             </div>
                           </div>
                           {cols.city ? <span className="ell" style={{ fontSize: 12.5, color: 'var(--muted)' }}>{b.city ?? '—'}</span> : null}
+                          {cols.phone ? (
+                            b.phone ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                                <span className="ell tnum" style={{ fontSize: 12.5, color: 'var(--muted)' }}>{b.phone}</span>
+                                {dupIds.has(b.id) ? (
+                                  <span title="Shares this phone number with another listing" style={{ fontSize: 10, fontWeight: 800, color: 'var(--warn)', background: 'var(--warnBg)', border: '1px solid var(--warnBd)', borderRadius: 5, padding: '1px 6px', whiteSpace: 'nowrap', flex: '0 0 auto' }}>Dup</span>
+                                ) : (
+                                  <span title="No other listing has this phone number" style={{ fontSize: 10, fontWeight: 800, color: 'var(--ok)', background: 'var(--okBg)', border: '1px solid var(--okBd)', borderRadius: 5, padding: '1px 6px', whiteSpace: 'nowrap', flex: '0 0 auto' }}>Unique</span>
+                                )}
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: 12.5, color: 'var(--faint)' }}>—</span>
+                            )
+                          ) : null}
                           {cols.cat ? <span className="ell" style={{ fontSize: 12.5, color: 'var(--muted)' }}>{b.category ?? '—'}</span> : null}
                           {cols.url ? (
                             <a href={mapsUrl(b.placeId, b.cid)} target="_blank" rel="noreferrer" aria-label="Open Google profile" onClick={(e) => e.stopPropagation()} style={{ color: 'var(--faint)', display: 'inline-flex' }}>
@@ -577,7 +602,17 @@ function Businesses() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 9, width: '100%' }}>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div className="ell" style={{ fontSize: 13.5, fontWeight: 700 }}>{b.name}</div>
-                            <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>{[b.city, b.category].filter(Boolean).join(' · ') || b.placeId}</div>
+                            <div className="ell" style={{ fontSize: 11.5, color: 'var(--faint)' }}>{[b.city, b.category].filter(Boolean).join(' · ') || b.placeId}</div>
+                            {b.phone ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 1 }}>
+                                <span className="tnum" style={{ fontSize: 11.5, color: 'var(--muted)' }}>{b.phone}</span>
+                                {dupIds.has(b.id) ? (
+                                  <span style={{ fontSize: 9.5, fontWeight: 800, color: 'var(--warn)', background: 'var(--warnBg)', border: '1px solid var(--warnBd)', borderRadius: 4, padding: '0 5px' }}>Dup</span>
+                                ) : (
+                                  <span style={{ fontSize: 9.5, fontWeight: 800, color: 'var(--ok)', background: 'var(--okBg)', border: '1px solid var(--okBd)', borderRadius: 4, padding: '0 5px' }}>Unique</span>
+                                )}
+                              </div>
+                            ) : null}
                           </div>
                           <StatusPill status={uiStatus(b)} busy={!!rowBusy[b.id]} small stale={!!b.lastError} staleTitle={b.lastError ?? undefined} />
                         </div>
