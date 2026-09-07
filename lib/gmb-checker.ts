@@ -1,6 +1,6 @@
 import { alertLogs, checkRuns, listings as listingsRepo, type CheckRun, type CheckTrigger, type Listing, type ListingStatus } from './db';
 import { config } from './env';
-import { CID_PREFIX, checkPlace, isCidPlaceId, type PlaceCheckOutcome } from './google-places';
+import { CID_PREFIX, checkPlace, fetchPlaceDetailsByCidLegacy, isCidPlaceId, mapResponseToListingStatus, type PlaceCheckOutcome } from './google-places';
 import { UniqueConstraintError } from './db';
 import { checkPlaceViaMapsPage } from './maps-page-check';
 import { alertEventLabel, sendStatusChangeAlert } from './notifications';
@@ -19,19 +19,40 @@ async function runCheckStrategy(listing: Listing, settings: AppSettings): Promis
 
   const api = await checkPlace(listing.placeId);
 
-  // The Places API index lags behind Maps: a brand-new or recently re-verified
-  // profile is visible on Maps but returns NOT_FOUND here ("Place ID is no
-  // longer valid"). Never drop a listing on that alone — confirm on the public
-  // Maps page first, and keep it ACTIVE when the page still shows it.
-  // Only when the API itself says the id is stale (NOT_FOUND). An INVALID_REQUEST
-  // means the id is malformed/unknown — there is nothing to rescue.
-  if (api.ok && api.status === 'SUSPENDED' && api.googleStatus === 'NOT_FOUND' && (listing.sourceUrl || listing.cid)) {
-    const page = await checkPlaceViaMapsPage(pageId);
-    if (page.ok && page.status !== 'SUSPENDED') {
-      return {
-        ...page,
-        detail: `${page.detail ?? 'Live on Google Maps'} — the Places API reports this id as stale (${api.googleStatus}); the public Maps page still shows the business, so it is treated as live.`,
-      };
+  // A listing is only "gone" when EVERY identifier we hold fails. A Place ID can
+  // go stale (Google re-issues ids) or simply be wrong in the sheet, while the
+  // CID / share link still point at a living business.
+  if (api.ok && api.status === 'SUSPENDED') {
+    // 1. Ask Google by CID — authoritative, and it hands back the current Place ID.
+    if (listing.cid) {
+      try {
+        const byCid = await fetchPlaceDetailsByCidLegacy(listing.cid);
+        const status = mapResponseToListingStatus(byCid);
+        if (status && status !== 'SUSPENDED') {
+          return {
+            ok: true,
+            status,
+            googleStatus: byCid.status,
+            businessStatus: byCid.result?.business_status ?? null,
+            googleName: byCid.result?.name ?? null,
+            resolvedPlaceId: byCid.result?.place_id ?? null,
+            raw: byCid,
+            detail: `Live — found by CID ${listing.cid}. The stored Place ID did not resolve (${api.googleStatus}), so it has been refreshed from Google.`,
+          };
+        }
+      } catch (err) {
+        console.warn(`[gmb-checker] CID fallback failed for ${listing.id}:`, errorMessage(err));
+      }
+    }
+    // 2. Last resort: the public Maps page (works via the original share link).
+    if (listing.sourceUrl) {
+      const page = await checkPlaceViaMapsPage(pageId);
+      if (page.ok && page.status !== 'SUSPENDED') {
+        return {
+          ...page,
+          detail: `${page.detail ?? 'Live on Google Maps'} — the Places API did not resolve the stored id (${api.googleStatus}), but the saved Maps link still shows the business.`,
+        };
+      }
     }
   }
   return api;
@@ -148,12 +169,14 @@ export async function checkListing(listing: Listing, options: { settings?: AppSe
   const newStatus = outcome.status;
   const previousStatus = listing.currentStatus;
 
-  // --- "cid:" listings: Google told us the real Place ID → store it ---------
-  if (isCidPlaceId(listing.placeId) && outcome.resolvedPlaceId && !isCidPlaceId(outcome.resolvedPlaceId)) {
+  // --- Google told us the current Place ID → store it (self-healing) --------
+  // Covers "cid:" placeholders from import and stale/incorrect ids found via CID.
+  if (outcome.resolvedPlaceId && !isCidPlaceId(outcome.resolvedPlaceId) && outcome.resolvedPlaceId !== listing.placeId) {
     try {
-      listingsRepo.update(listing.id, { cid: listing.cid ?? listing.placeId.slice(CID_PREFIX.length) });
+      if (isCidPlaceId(listing.placeId)) listingsRepo.update(listing.id, { cid: listing.cid ?? listing.placeId.slice(CID_PREFIX.length) });
       listingsRepo.updatePlaceId(listing.id, outcome.resolvedPlaceId);
       base.placeId = outcome.resolvedPlaceId;
+      console.info(`[gmb-checker] ${listing.name}: Place ID refreshed ${listing.placeId} -> ${outcome.resolvedPlaceId}`);
     } catch (err) {
       if (err instanceof UniqueConstraintError) console.warn(`[gmb-checker] ${listing.name}: Place ID ${outcome.resolvedPlaceId} already monitored by another listing`);
       else console.error(`[gmb-checker] failed to store resolved Place ID for ${listing.id}:`, errorMessage(err));
