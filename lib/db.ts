@@ -42,6 +42,8 @@ export interface Listing {
   category: string | null;
   phone: string | null;
   website: string | null;
+  /** Original Google Maps link from the import — the most reliable way to re-check the listing. */
+  sourceUrl: string | null;
   tag: string | null;
   notes: string | null;
   /** Google account that owns the profile (login email). */
@@ -98,7 +100,7 @@ export interface CheckRun {
 // Connection
 // ---------------------------------------------------------------------------
 
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 export const USER_ROLES = ['ADMIN', 'VIEWER'] as const;
 export type UserRole = (typeof USER_ROLES)[number];
@@ -139,6 +141,7 @@ CREATE TABLE IF NOT EXISTS listings (
   category          TEXT,
   phone             TEXT,
   website           TEXT,
+  sourceUrl         TEXT,
   tag               TEXT,
   notes             TEXT,
   accountEmail      TEXT,
@@ -255,6 +258,7 @@ function migrate(db: Database.Database): void {
     addColumnIfMissing(db, 'listings', 'accountPassword', 'TEXT');
     addColumnIfMissing(db, 'listings', 'totpSecret', 'TEXT');
   }
+  if (version < 5) addColumnIfMissing(db, 'listings', 'sourceUrl', 'TEXT');
   if (version < SCHEMA_VERSION) db.pragma(`user_version = ${SCHEMA_VERSION}`);
 }
 
@@ -310,6 +314,7 @@ export interface ListingCreateInput {
   category?: string | null;
   phone?: string | null;
   website?: string | null;
+  sourceUrl?: string | null;
   tag?: string | null;
   notes?: string | null;
   accountEmail?: string | null;
@@ -322,7 +327,7 @@ export interface ListingCreateInput {
 export type ListingUpdateInput = Partial<
   Pick<
     Listing,
-    'name' | 'cid' | 'address' | 'city' | 'category' | 'phone' | 'website' | 'tag' | 'notes' | 'accountEmail' | 'accountPassword' | 'totpSecret' | 'monitoringEnabled'
+    'name' | 'cid' | 'address' | 'city' | 'category' | 'phone' | 'website' | 'sourceUrl' | 'tag' | 'notes' | 'accountEmail' | 'accountPassword' | 'totpSecret' | 'monitoringEnabled'
   >
 >;
 
@@ -435,8 +440,8 @@ export const listings = {
     const ts = nowIso();
     try {
       db.prepare(
-        `INSERT INTO listings (id, name, placeId, cid, address, city, category, phone, website, tag, notes, accountEmail, accountPassword, totpSecret, currentStatus, monitoringEnabled, createdAt, updatedAt)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVE', 1, ?, ?)`,
+        `INSERT INTO listings (id, name, placeId, cid, address, city, category, phone, website, sourceUrl, tag, notes, accountEmail, accountPassword, totpSecret, currentStatus, monitoringEnabled, createdAt, updatedAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVE', 1, ?, ?)`,
       ).run(
         id,
         input.name,
@@ -447,6 +452,7 @@ export const listings = {
         input.category ?? null,
         input.phone ?? null,
         input.website ?? null,
+        input.sourceUrl ?? null,
         input.tag ?? null,
         input.notes ?? null,
         input.accountEmail ?? null,

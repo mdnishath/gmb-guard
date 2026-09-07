@@ -73,9 +73,12 @@ export function mapsCheckUrl(id: { placeId: string; cid: string | null }): strin
 }
 
 /** All the ways we can ask Google for this listing, most promising first. */
-export function mapsCheckVariants(id: { placeId: string; cid: string | null }): Array<{ variant: string; url: string; userAgent?: string }> {
+export function mapsCheckVariants(id: { placeId: string; cid: string | null; sourceUrl?: string | null }): Array<{ variant: string; url: string; userAgent?: string }> {
   const cid = cidOf(id);
   const out: Array<{ variant: string; url: string; userAgent?: string }> = [];
+  // The original share link is the most reliable: it redirects server-side to
+  // /maps/place/<name>/, which ?cid= does not (the browser resolves that with JS).
+  if (id.sourceUrl && /^https?:\/\//i.test(id.sourceUrl)) out.push({ variant: 'source-link', url: id.sourceUrl });
   if (cid) {
     out.push({ variant: 'maps?cid', url: `https://www.google.com/maps?cid=${cid}&hl=en` });
     out.push({ variant: 'embed', url: `https://maps.google.com/maps?cid=${cid}&hl=en&output=embed` });
@@ -158,7 +161,7 @@ function evaluate(html: string, finalUrl: string | null, id: { placeId: string; 
   };
 }
 
-export async function checkPlaceViaMapsPage(id: { placeId: string; cid: string | null; name?: string | null }, timeoutMs = 15000): Promise<PlaceCheckOutcome> {
+export async function checkPlaceViaMapsPage(id: { placeId: string; cid: string | null; name?: string | null; sourceUrl?: string | null }, timeoutMs = 15000): Promise<PlaceCheckOutcome> {
   const variants = mapsCheckVariants(id);
   const tried: MapsPageCheckInfo['tried'] = [];
   let blocked: string | null = null;

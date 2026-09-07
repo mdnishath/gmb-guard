@@ -322,6 +322,7 @@ export default function ImportPage() {
         category: p.category || bestCategory(cand?.types, p.name) || null,
         phone: p.phone || cand?.phone || null,
         website: p.website || cand?.website || null,
+        sourceUrl: p.mapsUrl || matches[p.row]?.result?.mapsLink?.finalUrl || null,
         tag: p.tag || null,
         accountEmail: p.accountEmail || null,
         accountPassword: p.accountPassword || null,

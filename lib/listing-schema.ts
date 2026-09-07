@@ -41,6 +41,7 @@ export const listingFieldsSchema = z.object({
   category: optionalText(120),
   phone: optionalText(40),
   website: optionalText(300),
+  sourceUrl: optionalText(1000),
   tag: optionalText(60),
   notes: optionalText(5000),
   accountEmail: optionalText(200),

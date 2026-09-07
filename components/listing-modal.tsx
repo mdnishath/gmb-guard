@@ -159,6 +159,7 @@ export function ListingModal({ mode, listing, onClose, onSaved }: { mode: 'add' 
         category: f.category.trim() || null,
         phone: f.phone.trim() || null,
         website: f.website.trim() || null,
+        sourceUrl: /^https?:\/\//i.test(q.trim()) ? q.trim() : listing?.sourceUrl ?? null,
         tag: f.tag.trim() || null,
         accountEmail: f.accountEmail.trim() || null,
         // Secrets: blank = leave unchanged when editing / not set when adding.

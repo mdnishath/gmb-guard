@@ -9,11 +9,30 @@ import { effectiveCheckMode, getAppSettings, type AppSettings } from './settings
 /** Run the configured check strategy for one listing. */
 async function runCheckStrategy(listing: Listing, settings: AppSettings): Promise<PlaceCheckOutcome> {
   const mode = effectiveCheckMode(settings);
-  if (mode === 'api') return checkPlace(listing.placeId);
-  const free = await checkPlaceViaMapsPage({ placeId: listing.placeId, cid: listing.cid, name: listing.name });
-  if (free.ok || mode === 'free') return free;
-  // free-then-api: page was inconclusive → ask the API
-  return checkPlace(listing.placeId);
+  const pageId = { placeId: listing.placeId, cid: listing.cid, name: listing.name, sourceUrl: listing.sourceUrl };
+
+  if (mode !== 'api') {
+    const free = await checkPlaceViaMapsPage(pageId);
+    if (free.ok || mode === 'free') return free;
+    return checkPlace(listing.placeId); // free-then-api: page inconclusive → API
+  }
+
+  const api = await checkPlace(listing.placeId);
+
+  // The Places API index lags behind Maps: a brand-new or recently re-verified
+  // profile is visible on Maps but returns NOT_FOUND here ("Place ID is no
+  // longer valid"). Never drop a listing on that alone — confirm on the public
+  // Maps page first, and keep it ACTIVE when the page still shows it.
+  if (api.ok && api.status === 'SUSPENDED' && (listing.sourceUrl || listing.cid)) {
+    const page = await checkPlaceViaMapsPage(pageId);
+    if (page.ok && page.status !== 'SUSPENDED') {
+      return {
+        ...page,
+        detail: `${page.detail ?? 'Live on Google Maps'} — the Places API reports this id as stale (${api.googleStatus}); the public Maps page still shows the business, so it is treated as live.`,
+      };
+    }
+  }
+  return api;
 }
 
 /**

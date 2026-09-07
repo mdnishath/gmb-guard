@@ -49,6 +49,7 @@ const updateListingSchema = z
     category: nullableText(120),
     phone: nullableText(40),
     website: nullableText(300),
+    sourceUrl: nullableText(1000),
     tag: nullableText(60),
     notes: nullableText(5000),
     accountEmail: nullableText(200),

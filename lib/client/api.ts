@@ -16,6 +16,7 @@ export interface Listing {
   category: string | null;
   phone: string | null;
   website: string | null;
+  sourceUrl: string | null;
   tag: string | null;
   notes: string | null;
   accountEmail: string | null;
@@ -205,6 +206,7 @@ export interface ListingInput {
   category?: string | null;
   phone?: string | null;
   website?: string | null;
+  sourceUrl?: string | null;
   tag?: string | null;
   notes?: string | null;
   accountEmail?: string | null;
