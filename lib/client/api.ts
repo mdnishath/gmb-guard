@@ -299,7 +299,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body.data as T;
 }
 
-function qs(params: Record<string, unknown>): string {
+function qs(params: object): string {
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v === undefined || v === null || v === '') continue;
