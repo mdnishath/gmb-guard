@@ -174,7 +174,7 @@ export function ListingDrawer() {
                 </button>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-                <StatusPill status={st} busy={busy} pop={pop} />
+                <StatusPill status={st} busy={busy} pop={pop} stale={!!listing.lastError} staleTitle={listing.lastError ?? undefined} />
                 <span style={{ fontSize: 12, color: 'var(--faint)' }}>Checked {relTime(listing.lastCheckedAt)}</span>
                 {listing.lastError ? (
                   <span title={listing.lastError} style={{ fontSize: 11.5, color: 'var(--warn)', fontWeight: 700 }}>

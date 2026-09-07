@@ -506,7 +506,7 @@ function Businesses() {
                             </a>
                           ) : null}
                           <div>
-                            <StatusPill status={uiStatus(b)} busy={busy} pop={!!just[b.id]} />
+                            <StatusPill status={uiStatus(b)} busy={busy} pop={!!just[b.id]} stale={!!b.lastError} staleTitle={b.lastError ?? undefined} />
                           </div>
                           {cols.checked ? (
                             <div className="tnum" style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--muted)' }} title={b.lastError ?? undefined}>
@@ -567,7 +567,7 @@ function Businesses() {
                             <div className="ell" style={{ fontSize: 13.5, fontWeight: 700 }}>{b.name}</div>
                             <div style={{ fontSize: 11.5, color: 'var(--faint)' }}>{[b.city, b.category].filter(Boolean).join(' · ') || b.placeId}</div>
                           </div>
-                          <StatusPill status={uiStatus(b)} busy={!!rowBusy[b.id]} small />
+                          <StatusPill status={uiStatus(b)} busy={!!rowBusy[b.id]} small stale={!!b.lastError} staleTitle={b.lastError ?? undefined} />
                         </div>
                         <div style={{ fontSize: 11.5, color: 'var(--muted)' }}>Checked {relTime(b.lastCheckedAt)} · updated {fdate(b.updatedAt)}</div>
                       </button>

@@ -75,7 +75,7 @@ export function Spinner({ size = 13, color = 'var(--accentInk)' }: { size?: numb
 // Status pill
 // ---------------------------------------------------------------------------
 
-export function StatusPill({ status, small, pop, busy }: { status: ListingStatus | UiStatus; small?: boolean; pop?: boolean; busy?: boolean }) {
+export function StatusPill({ status, small, pop, busy, stale, staleTitle }: { status: ListingStatus | UiStatus; small?: boolean; pop?: boolean; busy?: boolean; stale?: boolean; staleTitle?: string }) {
   if (busy) {
     return (
       <span className="pill" style={{ background: 'var(--warnBg)', borderColor: 'var(--warnBd)', color: 'var(--warn)' }}>
@@ -88,18 +88,21 @@ export function StatusPill({ status, small, pop, busy }: { status: ListingStatus
   return (
     <span
       role="status"
-      aria-label={`Status: ${m.l}`}
+      aria-label={`Status: ${m.l}${stale ? ' (last check could not be completed)' : ''}`}
+      title={stale ? staleTitle ?? 'The last check could not be completed — this status is from an earlier check.' : undefined}
       className="pill"
       style={{
         background: m.bg,
-        borderColor: m.bd,
+        borderColor: stale ? 'var(--warnBd)' : m.bd,
         color: m.c,
+        ...(stale ? { borderStyle: 'dashed' } : {}),
         ...(small ? { fontSize: 11, padding: '2px 9px 2px 7px' } : {}),
         ...(pop ? { animation: 'pop .55s ease' } : {}),
       }}
     >
       <span className="pill-dot" />
       <span>{m.l}</span>
+      {stale ? <span style={{ color: 'var(--warn)', fontWeight: 800, marginLeft: 2 }}>?</span> : null}
     </span>
   );
 }

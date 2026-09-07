@@ -104,8 +104,8 @@ export default function SettingsPage() {
               {(
                 [
                   ['api', 'Google Places API', 'Precise. 1 API call per listing per check.'],
-                  ['free', 'Google Maps page (no API)', 'Free. Loads the public Maps page: shown → Live, missing → Suspended, "closed" in the page → Closed. Slower (2 at a time) and best-effort.'],
-                  ['free-then-api', 'Maps page first, API as fallback', 'Free when the page is readable; uses the API only when Google blocks or hides the page.'],
+                  ['free', 'Google Maps page (no API)', 'Free, but only works for listings imported from a Google Maps share link (maps.app.goo.gl/…). For those the link is followed and the business page confirms it. Listings identified only by a Place ID or CID cannot be verified this way — Google serves a script-only page to servers — so their status is left unchanged and marked unverified (dashed badge).'],
+                  ['free-then-api', 'Maps page first, API as fallback', 'Recommended if you want to save calls: uses the free link check when it can confirm, and the API for everything it cannot.'],
                 ] as const
               ).map(([k, l, sub]) => {
                 const forced = s.google.disabled && k !== 'free';
