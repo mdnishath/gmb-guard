@@ -635,6 +635,30 @@ export const listings = {
     ).map((r) => r.v);
   },
 
+  /**
+   * Listings that share a phone number (normalised to the last 9 digits, so
+   * "+33 1 89 52 11 25" and "0189521125" count as the same line).
+   */
+  duplicatePhones(): Array<{ phone: string; count: number; listings: Array<{ id: string; name: string; phone: string; city: string | null; currentStatus: ListingStatus }> }> {
+    const rows = getDb()
+      .prepare("SELECT id, name, phone, city, currentStatus FROM listings WHERE phone IS NOT NULL AND TRIM(phone) <> '' ORDER BY name COLLATE NOCASE")
+      .all() as Array<{ id: string; name: string; phone: string; city: string | null; currentStatus: ListingStatus }>;
+    const groups = new Map<string, typeof rows>();
+    for (const r of rows) {
+      const digits = r.phone.replace(/\D/g, '');
+      if (digits.length < 7) continue;
+      const key = digits.slice(-9);
+      const arr = groups.get(key) ?? [];
+      arr.push(r);
+      groups.set(key, arr);
+    }
+    return Array.from(groups.entries())
+      .filter(([, arr]) => arr.length > 1)
+      .map(([key, arr]) => ({ phone: arr[0].phone, count: arr.length, listings: arr, key }))
+      .sort((a, b) => b.count - a.count)
+      .map(({ key: _k, ...rest }) => rest);
+  },
+
   /** Non-active listings grouped by city (for "most affected cities"). */
   affectedByCity(limit = 8): Array<{ city: string; count: number }> {
     return getDb()

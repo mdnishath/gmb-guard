@@ -257,6 +257,20 @@ export default function ImportPage() {
 
   const [manualBusy, setManualBusy] = useState<number | null>(null);
 
+  /** Phone numbers appearing on more than one row of the file (last 9 digits). */
+  const dupPhoneRows = useMemo(() => {
+    const byPhone = new Map<string, number[]>();
+    for (const p of prepared) {
+      const d = p.phone.replace(/\D/g, '');
+      if (d.length < 7) continue;
+      const key = d.slice(-9);
+      byPhone.set(key, [...(byPhone.get(key) ?? []), p.row]);
+    }
+    const rows = new Set<number>();
+    for (const list of byPhone.values()) if (list.length > 1) list.forEach((r) => rows.add(r));
+    return rows;
+  }, [prepared]);
+
   /** Resolve a Maps URL pasted into the manual box for one row. */
   const resolveManual = async (p: PreparedRow) => {
     const url = matches[p.row]?.manual?.trim();
@@ -710,6 +724,14 @@ export default function ImportPage() {
             <div className="stat-box" style={{ borderColor: 'var(--badBd)', background: 'var(--badBg)' }}><div className="tnum" style={{ fontSize: 23, fontWeight: 800, color: 'var(--bad)' }}>{validated.skipped.length}</div><div style={{ fontSize: 12, fontWeight: 700, color: 'var(--bad)' }}>Without a match · skipped</div></div>
           </div>
 
+          {dupPhoneRows.size > 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14, padding: '10px 12px', border: '1px solid var(--warnBd)', background: 'var(--warnBg)', borderRadius: 10 }}>
+              <Icon d={IC.alert} size={14} color="var(--warn)" />
+              <div style={{ fontSize: 12.5, color: 'var(--warn)', fontWeight: 600 }}>
+                {dupPhoneRows.size} rows share a phone number with another row. They are still imported — check them under Businesses afterwards if they are the same business twice.
+              </div>
+            </div>
+          ) : null}
           <div style={{ fontSize: 13, fontWeight: 700, marginTop: 18 }}>What will be imported</div>
           <div style={{ overflowX: 'auto', marginTop: 8, border: '1px solid var(--border)', borderRadius: 10, maxHeight: 320, overflowY: 'auto' }}>
             <div style={{ minWidth: 640 }}>
@@ -720,10 +742,10 @@ export default function ImportPage() {
                 <span>City</span>
               </div>
               {validated.valid.slice(0, 300).map((v) => (
-                <div key={v.row} style={{ display: 'grid', gridTemplateColumns: '2fr 2.2fr 1.4fr 1fr', gap: 10, padding: '8px 12px', borderBottom: '1px solid var(--border)', fontSize: 12 }}>
+                <div key={v.row} style={{ display: 'grid', gridTemplateColumns: '2fr 2.2fr 1.4fr 1fr', gap: 10, padding: '8px 12px', borderBottom: '1px solid var(--border)', fontSize: 12, background: dupPhoneRows.has(v.row) ? 'var(--warnBg)' : undefined }}>
                   <span className="ell" style={{ fontWeight: 600 }}>{v.name}</span>
                   <span className="ell mono" style={{ color: 'var(--muted)', fontSize: 11 }}>{v.placeId}</span>
-                  <span className="ell" style={{ color: 'var(--muted)' }}>{v.phone ?? ''}</span>
+                  <span className="ell" style={{ color: dupPhoneRows.has(v.row) ? 'var(--warn)' : 'var(--muted)', fontWeight: dupPhoneRows.has(v.row) ? 700 : 400 }} title={dupPhoneRows.has(v.row) ? 'This phone number appears on more than one row' : undefined}>{v.phone ?? ''}</span>
                   <span className="ell" style={{ color: 'var(--muted)' }}>{v.city ?? ''}</span>
                 </div>
               ))}

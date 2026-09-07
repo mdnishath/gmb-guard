@@ -256,6 +256,12 @@ export interface ResolveInput {
   mapsUrl?: string;
 }
 
+export interface DuplicateGroup {
+  phone: string;
+  count: number;
+  listings: Array<{ id: string; name: string; phone: string; city: string | null; currentStatus: ListingStatus }>;
+}
+
 export interface ListingListParams {
   page?: number;
   pageSize?: number;
@@ -342,6 +348,14 @@ export const api = {
       ),
     /** Fill missing cities from addresses (admin). */
     backfill: () => request<{ updated: number }>('/api/listings/backfill', { method: 'POST' }),
+    /** Pull phone / category / address / website from Google for listings missing them (admin). */
+    enrich: (body: { onlyMissing?: boolean; limit?: number } = {}) =>
+      request<{ candidates: number; processed: number; updated: number; failed: number; remaining: number; errors: string[] }>('/api/listings/enrich', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    /** Listings that share a phone number. */
+    duplicates: () => request<{ groups: DuplicateGroup[]; totalGroups: number; totalListings: number }>('/api/listings/duplicates'),
     /** Find Place IDs on Google for up to 15 rows per call. */
     resolve: (rows: ResolveInput[], mode: 'auto' | 'free' = 'auto') =>
       request<{ results: ResolveResult[]; mode: 'auto' | 'free' }>('/api/listings/resolve', { method: 'POST', body: JSON.stringify({ rows, mode }) }),

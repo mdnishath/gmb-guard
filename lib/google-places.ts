@@ -379,6 +379,51 @@ type LegacySearchResult = {
   website?: string;
 };
 
+/**
+ * Full profile fields for one place (used to fill in phone / category /
+ * address / website that the client's spreadsheet did not have).
+ */
+export interface PlaceProfile {
+  name: string | null;
+  phone: string | null;
+  website: string | null;
+  address: string | null;
+  types: string[];
+  businessStatus: string | null;
+  placeId: string | null;
+}
+
+export async function fetchPlaceProfile(placeId: string, cid?: string | null, timeoutMs?: number): Promise<PlaceProfile | null> {
+  const apiKey = requireEnv('GOOGLE_PLACES_API_KEY');
+  chargeGoogleCall('details');
+  const url = new URL(GOOGLE_PLACE_DETAILS_URL);
+  if (isCidPlaceId(placeId)) url.searchParams.set('cid', placeId.slice(CID_PREFIX.length));
+  else if (cid && !/^[A-Za-z0-9_-]{10,}$/.test(placeId)) url.searchParams.set('cid', cid);
+  else url.searchParams.set('place_id', placeId);
+  url.searchParams.set('fields', 'place_id,name,business_status,formatted_phone_number,international_phone_number,website,formatted_address,types');
+  url.searchParams.set('key', apiKey);
+
+  const t = withTimeout(timeoutMs ?? config.googleTimeoutMs);
+  try {
+    const res = await fetch(url, { signal: t.signal, cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new GooglePlacesHttpError(res.status, `Google Places responded with HTTP ${res.status}`);
+    const json = (await res.json()) as { status: string; result?: LegacySearchResult & { formatted_address?: string } };
+    if (json.status !== 'OK' || !json.result) return null;
+    const r = json.result;
+    return {
+      name: r.name ?? null,
+      phone: r.international_phone_number ?? r.formatted_phone_number ?? null,
+      website: r.website ?? null,
+      address: r.formatted_address ?? null,
+      types: r.types ?? [],
+      businessStatus: r.business_status ?? null,
+      placeId: r.place_id ?? null,
+    };
+  } finally {
+    t.clear();
+  }
+}
+
 function legacyToCandidate(r: LegacySearchResult): PlaceCandidate {
   return {
     placeId: r.place_id,

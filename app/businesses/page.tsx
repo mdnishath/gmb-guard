@@ -7,7 +7,7 @@ import { useApp, errorMessage } from '@/components/app-context';
 import { ExportModal } from '@/components/export-modal';
 import { ListingModal } from '@/components/listing-modal';
 import { Checkbox, EmptyState, IC, Icon, Pager, Skeleton, StatusPill } from '@/components/ui';
-import { api, type Listing, type ListingListParams, type Pagination, type Stats } from '@/lib/client/api';
+import { api, type DuplicateGroup, type Listing, type ListingListParams, type Pagination, type Stats } from '@/lib/client/api';
 import { fdate, locationLine, mapsUrl, relTime, uiStatus, type UiStatus } from '@/lib/client/format';
 
 type View = 'all' | 'susp' | 'attn' | 'recent';
@@ -37,6 +37,8 @@ function Businesses() {
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [fStatus, setFStatus] = useState<StatusFilter>('');
+  const [dups, setDups] = useState<DuplicateGroup[] | null>(null);
+  const [showDups, setShowDups] = useState(false);
   const [fCity, setFCity] = useState('');
   const [fCat, setFCat] = useState('');
   const [view, setView] = useState<View>('all');
@@ -102,6 +104,14 @@ function Businesses() {
   useEffect(() => {
     void load();
   }, [load, app.refreshKey]);
+
+  // Duplicate phone numbers usually mean the same business was imported twice.
+  useEffect(() => {
+    api.listings
+      .duplicates()
+      .then((r) => setDups(r.groups))
+      .catch(() => setDups([]));
+  }, [app.refreshKey]);
 
   const N = stats?.total ?? 0;
   const pending = stats?.pending ?? 0;

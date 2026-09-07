@@ -224,6 +224,8 @@ export default function SettingsPage() {
             </div>
           )}
           {isAdmin ? (
+            <div style={{ display: 'flex', gap: 9, marginTop: 12, flexWrap: 'wrap' }}>
+            <EnrichButton />
             <button
               onClick={() =>
                 void api.listings
@@ -235,10 +237,10 @@ export default function SettingsPage() {
                   .catch((err) => app.toast('Backfill failed', errorMessage(err), { tone: 'bad' }))
               }
               className="btn btn-outline btn-sm"
-              style={{ marginTop: 12 }}
             >
               Fill missing cities & categories
             </button>
+            </div>
           ) : null}
           <div style={{ fontSize: 12, color: 'var(--faint)', marginTop: 12, lineHeight: 1.6 }}>
             How statuses are decided: Google <span className="mono">OK + OPERATIONAL</span> → Live · <span className="mono">NOT_FOUND / INVALID_REQUEST</span> → Suspended · <span className="mono">CLOSED_PERMANENTLY / TEMPORARILY</span> → Closed · quota or network errors never change a status.
@@ -634,5 +636,43 @@ function BackupCard() {
         )}
       </div>
     </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/** Pulls phone / category / address from Google, continuing until nothing is left. */
+function EnrichButton() {
+  const app = useApp();
+  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ updated: number; remaining: number } | null>(null);
+
+  const run = async () => {
+    setBusy(true);
+    let updated = 0;
+    let failed = 0;
+    try {
+      for (let round = 0; round < 20; round++) {
+        const r = await api.listings.enrich({ onlyMissing: true, limit: 200 });
+        updated += r.updated;
+        failed += r.failed;
+        setProgress({ updated, remaining: r.remaining });
+        if (r.remaining === 0 || r.processed === 0) break;
+      }
+      app.toast('Details pulled from Google', `${updated} listings updated${failed ? `, ${failed} could not be read` : ''}.`);
+      app.bumpRefresh();
+    } catch (err) {
+      app.toast('Could not fetch details', errorMessage(err), { tone: 'bad' });
+    } finally {
+      setBusy(false);
+      setProgress(null);
+    }
+  };
+
+  return (
+    <button onClick={() => void run()} disabled={busy} className="btn btn-soft btn-sm" title="Uses 1 Google API call per listing">
+      {busy ? <Icon d={IC.spinner} size={11} stroke={3} spin /> : <Icon d={IC.download} size={12} stroke={2.2} />}
+      {busy ? `Fetching… ${progress?.updated ?? 0} updated` : 'Fetch phone & category from Google'}
+    </button>
   );
 }
