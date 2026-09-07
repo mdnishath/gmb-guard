@@ -350,8 +350,9 @@ export const api = {
       ),
     /** Fill missing cities from addresses (admin). */
     backfill: () => request<{ updated: number }>('/api/listings/backfill', { method: 'POST' }),
-    /** Pull phone / category / address / website from Google for listings missing them (admin). */
-    enrich: (body: { onlyMissing?: boolean; limit?: number } = {}) =>
+    /** Pull real phone / city / address / category / website from Google (admin).
+     *  `fields` chooses what to pull; `overwrite` replaces existing values. */
+    enrich: (body: { fields?: Array<'phone' | 'city' | 'address' | 'category' | 'website'>; overwrite?: boolean; onlyMissing?: boolean; limit?: number } = {}) =>
       request<{ candidates: number; processed: number; updated: number; failed: number; remaining: number; errors: string[] }>('/api/listings/enrich', {
         method: 'POST',
         body: JSON.stringify(body),
