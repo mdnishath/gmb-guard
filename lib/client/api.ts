@@ -319,7 +319,7 @@ export const api = {
     get: (id: string) => request<{ listing: Listing; history: AuditLog[]; alerts: AlertLog[] }>(`/api/listings/${encodeURIComponent(id)}`),
     create: (body: ListingInput & { checkImmediately?: boolean }) =>
       request<{ listing: Listing; initialCheck: ListingCheckResult | null }>('/api/listings', { method: 'POST', body: JSON.stringify(body) }),
-    update: (id: string, body: Partial<ListingInput> & { monitoringEnabled?: boolean }) =>
+    update: (id: string, body: Partial<ListingInput> & { monitoringEnabled?: boolean; placeId?: string }) =>
       request<{ listing: Listing }>(`/api/listings/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(body) }),
     remove: (id: string) => request<{ deleted: { id: string; name: string } }>(`/api/listings/${encodeURIComponent(id)}`, { method: 'DELETE' }),
     credentials: (id: string) => request<Credentials>(`/api/listings/${encodeURIComponent(id)}/credentials`),

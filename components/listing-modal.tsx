@@ -136,7 +136,7 @@ export function ListingModal({ mode, listing, onClose, onSaved }: { mode: 'add' 
   const save = async () => {
     const e: Record<string, string> = {};
     if (!f.name.trim()) e.name = 'Business name is required';
-    if (mode === 'add') {
+    if (mode === 'add' || f.placeId.trim() !== (listing?.placeId ?? '')) {
       if (!f.placeId.trim()) e.placeId = 'Find the business on Google above, or paste its Place ID';
       else if (!PLACE_ID_RE.test(f.placeId.trim())) e.placeId = /cid=|^cid:|^\d+$/.test(f.placeId.trim()) ? 'That CID is not valid (Google CIDs have at most 20 digits)' : 'Paste a valid Place ID (ChIJ…), a CID, or a Google Maps URL';
       else if (f.placeId.trim().startsWith('cid:') && !isValidCid(f.placeId.trim().slice(4))) e.placeId = 'That CID is not valid (Google CIDs have at most 20 digits)';
@@ -173,7 +173,20 @@ export function ListingModal({ mode, listing, onClose, onSaved }: { mode: 'add' 
         else app.toast('Business added', `"${r.listing.name}" is ${statusMeta(r.listing.currentStatus).l} on Google.`, { tone: r.listing.currentStatus === 'ACTIVE' ? 'ok' : 'bad' });
         onSaved(r.listing);
       } else if (listing) {
-        const r = await api.listings.update(listing.id, common);
+        const changedId = f.placeId.trim() && f.placeId.trim() !== listing.placeId;
+        const r = await api.listings.update(listing.id, { ...common, ...(changedId ? { placeId: f.placeId.trim() } : {}) });
+        if (changedId) {
+          try {
+            const c = await api.listings.checkOne(listing.id);
+            app.toast('Place ID changed', `Re-checked: "${c.listing.name}" is ${statusMeta(c.listing.currentStatus).l}.${c.result?.detail ? ' ' + c.result.detail : ''}`, {
+              tone: c.listing.currentStatus === 'ACTIVE' ? 'ok' : 'bad',
+            });
+            onSaved(c.listing);
+            return;
+          } catch {
+            /* fall through to the normal toast */
+          }
+        }
         app.toast('Listing updated', `Changes to "${r.listing.name}" saved.`);
         onSaved(r.listing);
       }
@@ -242,12 +255,16 @@ export function ListingModal({ mode, listing, onClose, onSaved }: { mode: 'add' 
           value={f.placeId}
           onChange={set('placeId')}
           onBlur={onPlaceIdBlur}
-          readOnly={mode === 'edit'}
           placeholder="Filled by “Find on Google” — or paste ChIJ… / a Maps URL"
           aria-label="Place ID"
           className={`input mono ${err.placeId ? 'invalid' : ''}`}
-          style={{ fontSize: 12, ...(mode === 'edit' ? { color: 'var(--muted)', background: 'var(--well)' } : {}) }}
+          style={{ fontSize: 12 }}
         />
+        {mode === 'edit' && f.placeId.trim() !== (listing?.placeId ?? '') ? (
+          <div style={{ fontSize: 11.5, color: 'var(--warn)', marginTop: 5, fontWeight: 600 }}>
+            Changing the Place ID points monitoring at a different Google listing. Its status and last-checked time will be reset and re-checked.
+          </div>
+        ) : null}
         {picked ? (
           <div style={{ fontSize: 11.5, color: 'var(--ok)', marginTop: 5, fontWeight: 600 }}>
             ✓ Verified on Google: {picked.name}{picked.address ? ` · ${picked.address}` : ''}

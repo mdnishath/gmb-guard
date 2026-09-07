@@ -519,6 +519,11 @@ export const listings = {
     }
   },
 
+  /** Forget the previous verdict: the listing now points at a different Google listing. */
+  resetVerification(id: string): void {
+    getDb().prepare("UPDATE listings SET currentStatus = 'ACTIVE', lastCheckedAt = NULL, lastError = NULL, updatedAt = ? WHERE id = ?").run(nowIso(), id);
+  },
+
   /** Strip secrets for API responses. */
   toPublic(l: Listing): PublicListing {
     const { accountPassword, totpSecret, ...rest } = l;

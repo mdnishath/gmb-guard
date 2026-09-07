@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { alertLogs, auditLogs, listings } from '@/lib/db';
 import { ApiError, handleRouteError, jsonOk, parseJsonBody } from '@/lib/api-utils';
+import { placeIdSchema } from '@/lib/listing-schema';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -41,6 +42,8 @@ const nullableText = (max: number) =>
 const updateListingSchema = z
   .object({
     name: z.string().trim().min(1).max(200).optional(),
+    // Changing the identifier re-points monitoring at another Google listing.
+    placeId: placeIdSchema.optional(),
     cid: z
       .preprocess((v) => (v === '' ? null : typeof v === 'string' ? v.trim() : v), z.string().regex(/^\d{1,25}$/, 'cid must be a numeric Google CID').nullable())
       .optional(),
@@ -69,7 +72,17 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
     const id = idSchema.parse((await ctx.params).id);
     const input = await parseJsonBody(req, updateListingSchema);
 
-    const listing = listings.update(id, input);
+    const { placeId, ...rest } = input;
+    if (placeId) {
+      const current = listings.getById(id);
+      if (!current) throw new ApiError(404, 'Listing not found');
+      if (placeId !== current.placeId) {
+        // New identifier → the stored status is about a different listing now.
+        listings.updatePlaceId(id, placeId);
+        listings.resetVerification(id);
+      }
+    }
+    const listing = listings.update(id, rest);
     if (!listing) throw new ApiError(404, 'Listing not found');
 
     return jsonOk({ listing: listings.toPublic(listing) });
