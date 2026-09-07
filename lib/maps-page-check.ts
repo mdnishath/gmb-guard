@@ -14,9 +14,12 @@ import { fetchMapsPageRaw, nameSimilarity, parseMapsPageHtml } from './place-res
  *   page data contains OUR listing name              → exists
  *   Google redirected to /maps/place/<name>/         → exists
  *
- * Nothing on any variant → SUSPENDED (Google has no listing for this id).
- * The name Google shows must roughly match ours; a completely different name
- * means the id now points at another business (merged) → SUSPENDED.
+ * IMPORTANT: finding nothing is NOT treated as a suspension. Google serves a
+ * script-only shell to server-side requests, so "no name in the HTML" usually
+ * means we could not read the page, not that the listing is gone. Such a check
+ * returns INCONCLUSIVE and leaves the stored status untouched. The only
+ * negative verdict this check can give is when the page clearly shows a
+ * DIFFERENT business (the id was merged/replaced) → SUSPENDED.
  * "Permanently / temporarily closed" in the page meta → CLOSED (best-effort).
  */
 
@@ -223,11 +226,20 @@ export async function checkPlaceViaMapsPage(id: { placeId: string; cid: string |
   const expected = id.name?.trim() ?? '';
 
   if (!exists) {
-    const detail = found && !ev.sameBusiness
-      ? `Not found — this id now shows a different business: "${ev.pageName}" (expected "${expected}")`
-      : `Not found — Google returned only the generic "Google Maps" page on every variant (${tried.map((t) => `${t.variant}: ${t.bytes} bytes${t.error ? `, ${t.error}` : ''}`).join('; ')})`;
-    const raw: PlaceDetailsResponse & { mapsPage: MapsPageCheckInfo } = { status: 'NOT_FOUND', error_message: detail, mapsPage: info };
-    return { ok: true, status: 'SUSPENDED', googleStatus: 'NOT_FOUND', businessStatus: null, googleName: null, resolvedPlaceId: null, raw, detail };
+    // A page WITHOUT the business is not proof that the listing is gone: Google
+    // serves a JavaScript shell to server-side requests, so "no name found" is
+    // usually our own blindness, not a suspension. The only safe negative is a
+    // page that clearly shows a DIFFERENT business (the id was merged/replaced).
+    if (found && !ev.sameBusiness) {
+      const detail = `Not found — this id now shows a different business: "${ev.pageName}" (expected "${expected}")`;
+      const raw: PlaceDetailsResponse & { mapsPage: MapsPageCheckInfo } = { status: 'NOT_FOUND', error_message: detail, mapsPage: info };
+      return { ok: true, status: 'SUSPENDED', googleStatus: 'NOT_FOUND', businessStatus: null, googleName: null, resolvedPlaceId: null, raw, detail };
+    }
+    // Inconclusive → leave the stored status untouched and say why.
+    const reason = `Maps page could not confirm "${expected}" (Google served a script-only page: ${tried
+      .map((t) => `${t.variant}: ${t.bytes} bytes${t.error ? `, ${t.error}` : ''}`)
+      .join('; ')}). Status left unchanged — use API checks for a definitive answer.`;
+    return { ok: false, reason, googleStatus: null, raw: { source: 'maps-page', url, tried } };
   }
 
   const businessStatus = ev.closedPermanently ? 'CLOSED_PERMANENTLY' : ev.closedTemporarily ? 'CLOSED_TEMPORARILY' : 'OPERATIONAL';
