@@ -76,6 +76,7 @@ function Businesses() {
   const params = useMemo<ListingListParams>(() => {
     const p: ListingListParams = { page, pageSize: ps, search: debounced, city: fCity, category: fCat, sortBy, sortDir };
     if (fStatus === 'pend') p.pending = true;
+    else if (fStatus === 'unver') p.hasError = true;
     else if (fStatus) {
       p.status = fStatus === 'live' ? 'ACTIVE' : fStatus === 'susp' ? 'SUSPENDED' : 'CLOSED';
       if (fStatus === 'live') p.pending = false;
@@ -111,6 +112,7 @@ function Businesses() {
     ['susp', 'Suspended', stats?.distribution.SUSPENDED ?? 0],
     ['closed', 'Closed', stats?.distribution.CLOSED ?? 0],
     ['pend', 'Pending', pending],
+    ['unver', 'Unverified', stats?.monitoring.withErrors ?? 0],
   ];
 
   const applyView = (v: View) => {

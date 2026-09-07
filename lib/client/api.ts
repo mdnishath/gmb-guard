@@ -264,6 +264,8 @@ export interface ListingListParams {
   city?: string;
   category?: string;
   pending?: boolean;
+  /** true = only listings whose last check failed / could not confirm. */
+  hasError?: boolean;
   sortBy?: string;
   sortDir?: 'asc' | 'desc';
 }

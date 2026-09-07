@@ -350,6 +350,8 @@ export interface ListingListParams {
   category?: string;
   /** true = never checked (lastCheckedAt IS NULL) */
   pending?: boolean;
+  /** true = the last check failed or could not confirm the status */
+  hasError?: boolean;
   monitoringEnabled?: boolean;
   sortBy: ListingSortField;
   sortDir: 'asc' | 'desc';
@@ -372,6 +374,8 @@ function listingWhere(p: Partial<ListingListParams>): { sql: string; args: unkno
   }
   if (p.pending === true) clauses.push('lastCheckedAt IS NULL');
   if (p.pending === false) clauses.push('lastCheckedAt IS NOT NULL');
+  if (p.hasError === true) clauses.push('lastError IS NOT NULL');
+  if (p.hasError === false) clauses.push('lastError IS NULL');
   if (p.monitoringEnabled !== undefined) {
     clauses.push('monitoringEnabled = ?');
     args.push(p.monitoringEnabled ? 1 : 0);
@@ -603,10 +607,9 @@ export const listings = {
     return out;
   },
 
-  countWhere(p: Partial<ListingListParams> & { hasError?: boolean }): number {
+  countWhere(p: Partial<ListingListParams>): number {
     const { sql, args } = listingWhere(p);
-    const extra = p.hasError ? (sql ? ' AND lastError IS NOT NULL' : 'WHERE lastError IS NOT NULL') : '';
-    return (getDb().prepare(`SELECT COUNT(*) AS n FROM listings ${sql}${extra}`).get(...args) as { n: number }).n;
+    return (getDb().prepare(`SELECT COUNT(*) AS n FROM listings ${sql}`).get(...args) as { n: number }).n;
   },
 
   maxLastCheckedAt(): string | null {

@@ -1,7 +1,7 @@
 import type { Listing, ListingStatus } from './api';
 
 /** UI status: the three DB statuses plus "pending" for never-checked listings. */
-export type UiStatus = 'live' | 'susp' | 'closed' | 'pend';
+export type UiStatus = 'live' | 'susp' | 'closed' | 'pend' | 'unver';
 
 export interface StatusMeta {
   l: string;
@@ -15,20 +15,25 @@ export const STATUS: Record<UiStatus, StatusMeta> = {
   susp: { l: 'Suspended', c: 'var(--bad)', bg: 'var(--badBg)', bd: 'var(--badBd)' },
   closed: { l: 'Closed', c: 'var(--na)', bg: 'var(--naBg)', bd: 'var(--naBd)' },
   pend: { l: 'Pending', c: 'var(--warn)', bg: 'var(--warnBg)', bd: 'var(--warnBd)' },
+  // Google could not be reached / did not answer for this listing: the stored
+  // status is stale, so we do not claim it is live.
+  unver: { l: 'Unverified', c: 'var(--warn)', bg: 'var(--warnBg)', bd: 'var(--warnBd)' },
 };
 
 export function dbToUi(status: ListingStatus): UiStatus {
   return status === 'ACTIVE' ? 'live' : status === 'SUSPENDED' ? 'susp' : 'closed';
 }
 
-export function uiStatus(l: Pick<Listing, 'currentStatus' | 'lastCheckedAt'>): UiStatus {
+export function uiStatus(l: Pick<Listing, 'currentStatus' | 'lastCheckedAt'> & { lastError?: string | null }): UiStatus {
   if (!l.lastCheckedAt) return 'pend';
+  // A failed / inconclusive last check means we cannot vouch for the status.
+  if (l.lastError) return 'unver';
   return dbToUi(l.currentStatus);
 }
 
 export function statusMeta(status: ListingStatus | UiStatus): StatusMeta {
   const key = (status === 'ACTIVE' || status === 'SUSPENDED' || status === 'CLOSED' ? dbToUi(status) : status) as UiStatus;
-  return STATUS[key];
+  return STATUS[key] ?? STATUS.pend;
 }
 
 export function relMinutes(m: number): string {

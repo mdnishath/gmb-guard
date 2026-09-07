@@ -102,7 +102,7 @@ export function StatusPill({ status, small, pop, busy, stale, staleTitle }: { st
     >
       <span className="pill-dot" />
       <span>{m.l}</span>
-      {stale ? <span style={{ color: 'var(--warn)', fontWeight: 800, marginLeft: 2 }}>?</span> : null}
+
     </span>
   );
 }
