@@ -10,8 +10,7 @@ import { listingFieldsSchema } from '@/lib/listing-schema';
  * POST /api/listings/import
  *   { rows: [{ name, placeId, cid?, address?, city?, category?, tag? }, …], checkImmediately?: boolean }
  *
- * Validates every row, skips duplicates (inside the file and against the DB),
- * inserts the rest in one transaction and optionally runs the first check.
+ * Validates every row and inserts all valid ones (repeats included) in one transaction and optionally runs the first check.
  */
 
 export const runtime = 'nodejs';
@@ -31,8 +30,6 @@ export async function POST(req: NextRequest) {
 
     const valid: ListingCreateInput[] = [];
     const invalid: Array<{ row: number; errors: string[] }> = [];
-    const seen = new Set<string>();
-    let duplicatesInFile = 0;
 
     rows.forEach((raw, i) => {
       const parsed = listingFieldsSchema.safeParse(raw);
@@ -43,22 +40,13 @@ export async function POST(req: NextRequest) {
         });
         return;
       }
-      if (seen.has(parsed.data.placeId)) {
-        duplicatesInFile += 1;
-        return;
-      }
-      seen.add(parsed.data.placeId);
       const row = parsed.data;
       if (!row.city) row.city = cityFromAddress(row.address) ?? undefined;
       if (!row.category) row.category = categoryFromName(row.name) ?? undefined;
       valid.push(row);
     });
 
-    const existing = listings.existingPlaceIds(valid.map((v) => v.placeId));
-    const fresh = valid.filter((v) => !existing.has(v.placeId));
-    const duplicatesInDb = valid.length - fresh.length;
-
-    const { created, skipped } = listings.createMany(fresh);
+    const { created } = listings.createMany(valid);
 
     let check = null;
     if (checkImmediately && created.length > 0) {
@@ -70,7 +58,6 @@ export async function POST(req: NextRequest) {
       {
         received: rows.length,
         imported: created.length,
-        duplicates: duplicatesInFile + duplicatesInDb + skipped,
         invalid,
         check,
         listings: created.map(listings.toPublic),

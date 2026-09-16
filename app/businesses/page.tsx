@@ -8,7 +8,7 @@ import { EnrichModal } from '@/components/enrich-modal';
 import { ExportModal } from '@/components/export-modal';
 import { ListingModal } from '@/components/listing-modal';
 import { Checkbox, EmptyState, IC, Icon, Pager, Skeleton, StatusPill } from '@/components/ui';
-import { api, type DuplicateGroup, type Listing, type ListingListParams, type Pagination, type Stats } from '@/lib/client/api';
+import { api, type Listing, type ListingListParams, type Pagination, type Stats } from '@/lib/client/api';
 import { fdate, locationLine, mapsUrl, relTime, uiStatus, type UiStatus } from '@/lib/client/format';
 
 type View = 'all' | 'susp' | 'attn' | 'recent';
@@ -39,8 +39,6 @@ function Businesses() {
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [fStatus, setFStatus] = useState<StatusFilter>('');
-  const [dups, setDups] = useState<DuplicateGroup[] | null>(null);
-  const [showDups, setShowDups] = useState(false);
   const [enrichOpen, setEnrichOpen] = useState(false);
   const [fCity, setFCity] = useState('');
   const [fCat, setFCat] = useState('');
@@ -107,14 +105,6 @@ function Businesses() {
   useEffect(() => {
     void load();
   }, [load, app.refreshKey]);
-
-  // Duplicate phone numbers usually mean the same business was imported twice.
-  useEffect(() => {
-    api.listings
-      .duplicates()
-      .then((r) => setDups(r.groups))
-      .catch(() => setDups([]));
-  }, [app.refreshKey]);
 
   const N = stats?.total ?? 0;
   const pending = stats?.pending ?? 0;
@@ -259,14 +249,6 @@ function Businesses() {
       <span>{sortBy === key ? (sortDir === 'asc' ? '↑' : '↓') : ''}</span>
     </button>
   );
-
-  // IDs of listings that share a phone number with at least one other listing
-  // (computed across the whole database, not just the current page).
-  const dupIds = useMemo(() => {
-    const s = new Set<string>();
-    (dups ?? []).forEach((g) => g.listings.forEach((l) => s.add(l.id)));
-    return s;
-  }, [dups]);
 
   const tc = ['34px', 'minmax(210px,2.2fr)'];
   if (cols.city) tc.push('110px');
@@ -530,14 +512,7 @@ function Businesses() {
                           {cols.city ? <span className="ell" style={{ fontSize: 12.5, color: 'var(--muted)' }}>{b.city ?? '—'}</span> : null}
                           {cols.phone ? (
                             b.phone ? (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                                <span className="ell tnum" style={{ fontSize: 12.5, color: 'var(--muted)' }}>{b.phone}</span>
-                                {dupIds.has(b.id) ? (
-                                  <span title="Shares this phone number with another listing" style={{ fontSize: 10, fontWeight: 800, color: 'var(--warn)', background: 'var(--warnBg)', border: '1px solid var(--warnBd)', borderRadius: 5, padding: '1px 6px', whiteSpace: 'nowrap', flex: '0 0 auto' }}>Dup</span>
-                                ) : (
-                                  <span title="No other listing has this phone number" style={{ fontSize: 10, fontWeight: 800, color: 'var(--ok)', background: 'var(--okBg)', border: '1px solid var(--okBd)', borderRadius: 5, padding: '1px 6px', whiteSpace: 'nowrap', flex: '0 0 auto' }}>Unique</span>
-                                )}
-                              </div>
+                              <span className="ell tnum" style={{ fontSize: 12.5, color: 'var(--muted)' }}>{b.phone}</span>
                             ) : (
                               <span style={{ fontSize: 12.5, color: 'var(--faint)' }}>—</span>
                             )
@@ -610,14 +585,7 @@ function Businesses() {
                             <div className="ell" style={{ fontSize: 13.5, fontWeight: 700 }}>{b.name}</div>
                             <div className="ell" style={{ fontSize: 11.5, color: 'var(--faint)' }}>{[b.city, b.category].filter(Boolean).join(' · ') || b.placeId}</div>
                             {b.phone ? (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 1 }}>
-                                <span className="tnum" style={{ fontSize: 11.5, color: 'var(--muted)' }}>{b.phone}</span>
-                                {dupIds.has(b.id) ? (
-                                  <span style={{ fontSize: 9.5, fontWeight: 800, color: 'var(--warn)', background: 'var(--warnBg)', border: '1px solid var(--warnBd)', borderRadius: 4, padding: '0 5px' }}>Dup</span>
-                                ) : (
-                                  <span style={{ fontSize: 9.5, fontWeight: 800, color: 'var(--ok)', background: 'var(--okBg)', border: '1px solid var(--okBd)', borderRadius: 4, padding: '0 5px' }}>Unique</span>
-                                )}
-                              </div>
+                              <div className="tnum" style={{ fontSize: 11.5, color: 'var(--muted)', marginTop: 1 }}>{b.phone}</div>
                             ) : null}
                           </div>
                           <StatusPill status={uiStatus(b)} busy={!!rowBusy[b.id]} small stale={!!b.lastError} staleTitle={b.lastError ?? undefined} />

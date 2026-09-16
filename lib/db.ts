@@ -100,7 +100,7 @@ export interface CheckRun {
 // Connection
 // ---------------------------------------------------------------------------
 
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 export const USER_ROLES = ['ADMIN', 'VIEWER'] as const;
 export type UserRole = (typeof USER_ROLES)[number];
@@ -134,7 +134,7 @@ const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS listings (
   id                TEXT PRIMARY KEY,
   name              TEXT NOT NULL,
-  placeId           TEXT NOT NULL UNIQUE,
+  placeId           TEXT NOT NULL,
   cid               TEXT,
   address           TEXT,
   city              TEXT,
@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS listings (
   updatedAt         TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS listings_status_idx ON listings(currentStatus);
+CREATE INDEX IF NOT EXISTS listings_placeId_idx ON listings(placeId);
 CREATE INDEX IF NOT EXISTS listings_lastChecked_idx ON listings(lastCheckedAt);
 CREATE INDEX IF NOT EXISTS listings_city_idx ON listings(city);
 CREATE INDEX IF NOT EXISTS listings_category_idx ON listings(category);
@@ -246,6 +247,30 @@ function addColumnIfMissing(db: Database.Database, table: string, column: string
   if (!cols.some((c) => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
 }
 
+/** Place IDs are no longer unique: every imported row is kept, even repeats. */
+function dropPlaceIdUnique(db: Database.Database): void {
+  const sql = (db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'listings'").get() as { sql: string } | undefined)?.sql ?? '';
+  if (!/placeId\s+TEXT\s+NOT\s+NULL\s+UNIQUE/i.test(sql)) return;
+  const cols =
+    'id, name, placeId, cid, address, city, category, phone, website, sourceUrl, tag, notes, accountEmail, accountPassword, totpSecret, currentStatus, monitoringEnabled, lastCheckedAt, lastError, createdAt, updatedAt';
+  const create = SCHEMA_SQL.slice(SCHEMA_SQL.indexOf('CREATE TABLE IF NOT EXISTS listings'), SCHEMA_SQL.indexOf(');') + 2).replace(
+    'CREATE TABLE IF NOT EXISTS listings',
+    'CREATE TABLE listings_new',
+  );
+  db.pragma('foreign_keys = OFF');
+  try {
+    db.transaction(() => {
+      db.exec(create);
+      db.exec(`INSERT INTO listings_new (${cols}) SELECT ${cols} FROM listings`);
+      db.exec('DROP TABLE listings');
+      db.exec('ALTER TABLE listings_new RENAME TO listings');
+      db.exec(SCHEMA_SQL);
+    })();
+  } finally {
+    db.pragma('foreign_keys = ON');
+  }
+}
+
 function migrate(db: Database.Database): void {
   db.exec(SCHEMA_SQL);
   const version = db.pragma('user_version', { simple: true }) as number;
@@ -259,6 +284,7 @@ function migrate(db: Database.Database): void {
     addColumnIfMissing(db, 'listings', 'totpSecret', 'TEXT');
   }
   if (version < 5) addColumnIfMissing(db, 'listings', 'sourceUrl', 'TEXT');
+  if (version < 6) dropPlaceIdUnique(db);
   if (version < SCHEMA_VERSION) db.pragma(`user_version = ${SCHEMA_VERSION}`);
 }
 
@@ -424,20 +450,6 @@ export const listings = {
     return row ? rowToListing(row) : null;
   },
 
-  existingPlaceIds(placeIds: string[]): Set<string> {
-    if (placeIds.length === 0) return new Set();
-    const db = getDb();
-    const found = new Set<string>();
-    for (let i = 0; i < placeIds.length; i += 500) {
-      const chunk = placeIds.slice(i, i + 500);
-      const rows = db.prepare(`SELECT placeId FROM listings WHERE placeId IN (${chunk.map(() => '?').join(',')})`).all(...chunk) as {
-        placeId: string;
-      }[];
-      rows.forEach((r) => found.add(r.placeId));
-    }
-    return found;
-  },
-
   create(input: ListingCreateInput): Listing {
     const db = getDb();
     const id = randomUUID();
@@ -472,23 +484,13 @@ export const listings = {
     return listings.getById(id)!;
   },
 
-  /** Insert many in one transaction; rows whose placeId already exists are skipped. */
-  createMany(inputs: ListingCreateInput[]): { created: Listing[]; skipped: number } {
-    const db = getDb();
+  /** Insert many in one transaction. */
+  createMany(inputs: ListingCreateInput[]): { created: Listing[] } {
     const created: Listing[] = [];
-    let skipped = 0;
-    const run = db.transaction((rows: ListingCreateInput[]) => {
-      for (const row of rows) {
-        try {
-          created.push(listings.create(row));
-        } catch (err) {
-          if (err instanceof UniqueConstraintError) skipped += 1;
-          else throw err;
-        }
-      }
-    });
-    run(inputs);
-    return { created, skipped };
+    getDb().transaction((rows: ListingCreateInput[]) => {
+      for (const row of rows) created.push(listings.create(row));
+    })(inputs);
+    return { created };
   },
 
   update(id: string, patch: ListingUpdateInput): Listing | null {
@@ -633,30 +635,6 @@ export const listings = {
         v: string;
       }[]
     ).map((r) => r.v);
-  },
-
-  /**
-   * Listings that share a phone number (normalised to the last 9 digits, so
-   * "+33 1 89 52 11 25" and "0189521125" count as the same line).
-   */
-  duplicatePhones(): Array<{ phone: string; count: number; listings: Array<{ id: string; name: string; phone: string; city: string | null; currentStatus: ListingStatus }> }> {
-    const rows = getDb()
-      .prepare("SELECT id, name, phone, city, currentStatus FROM listings WHERE phone IS NOT NULL AND TRIM(phone) <> '' ORDER BY name COLLATE NOCASE")
-      .all() as Array<{ id: string; name: string; phone: string; city: string | null; currentStatus: ListingStatus }>;
-    const groups = new Map<string, typeof rows>();
-    for (const r of rows) {
-      const digits = r.phone.replace(/\D/g, '');
-      if (digits.length < 7) continue;
-      const key = digits.slice(-9);
-      const arr = groups.get(key) ?? [];
-      arr.push(r);
-      groups.set(key, arr);
-    }
-    return Array.from(groups.entries())
-      .filter(([, arr]) => arr.length > 1)
-      .map(([key, arr]) => ({ phone: arr[0].phone, count: arr.length, listings: arr, key }))
-      .sort((a, b) => b.count - a.count)
-      .map(({ key: _k, ...rest }) => rest);
   },
 
   /** Non-active listings grouped by city (for "most affected cities"). */

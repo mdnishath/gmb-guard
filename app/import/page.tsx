@@ -112,7 +112,7 @@ export default function ImportPage() {
   const [map, setMap] = useState<Target[]>([]);
   const [checkNow, setCheckNow] = useState(true);
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<{ imported: number; duplicates: number; invalid: number; changed: number; errors: number } | null>(null);
+  const [result, setResult] = useState<{ imported: number; invalid: number; changed: number; errors: number } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [paste, setPaste] = useState('');
   const [drag, setDrag] = useState(false);
@@ -257,20 +257,6 @@ export default function ImportPage() {
 
   const [manualBusy, setManualBusy] = useState<number | null>(null);
 
-  /** Phone numbers appearing on more than one row of the file (last 9 digits). */
-  const dupPhoneRows = useMemo(() => {
-    const byPhone = new Map<string, number[]>();
-    for (const p of prepared) {
-      const d = p.phone.replace(/\D/g, '');
-      if (d.length < 7) continue;
-      const key = d.slice(-9);
-      byPhone.set(key, [...(byPhone.get(key) ?? []), p.row]);
-    }
-    const rows = new Set<number>();
-    for (const list of byPhone.values()) if (list.length > 1) list.forEach((r) => rows.add(r));
-    return rows;
-  }, [prepared]);
-
   /** Resolve a Maps URL pasted into the manual box for one row. */
   const resolveManual = async (p: PreparedRow) => {
     const url = matches[p.row]?.manual?.trim();
@@ -308,8 +294,6 @@ export default function ImportPage() {
   const validated = useMemo(() => {
     const valid: Array<ListingInput & { row: number }> = [];
     const skipped: Array<{ row: number; name: string; reason: string }> = [];
-    const seen = new Set<string>();
-    let dups = 0;
     for (const p of prepared) {
       if (!p.name) {
         skipped.push({ row: p.row, name: '(no name)', reason: 'Business name is empty' });
@@ -320,11 +304,6 @@ export default function ImportPage() {
         skipped.push({ row: p.row, name: p.name, reason: p.givenPlaceId || matches[p.row]?.result ? 'No Google match chosen' : 'Not matched yet' });
         continue;
       }
-      if (seen.has(placeId)) {
-        dups++;
-        continue;
-      }
-      seen.add(placeId);
       const cand = matches[p.row]?.result?.candidates.find((c) => c.placeId === placeId);
       valid.push({
         row: p.row,
@@ -343,7 +322,7 @@ export default function ImportPage() {
         totpSecret: p.totpSecret || null,
       });
     }
-    return { valid, skipped, dups };
+    return { valid, skipped };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prepared, matches]);
 
@@ -353,7 +332,7 @@ export default function ImportPage() {
     try {
       const payload = validated.valid.map(({ row: _row, ...rest }) => rest);
       const r = await api.listings.import(payload, checkNow);
-      setResult({ imported: r.imported, duplicates: r.duplicates + validated.dups, invalid: r.invalid.length + validated.skipped.length, changed: r.check?.changed ?? 0, errors: r.check?.errors ?? 0 });
+      setResult({ imported: r.imported, invalid: r.invalid.length + validated.skipped.length, changed: r.check?.changed ?? 0, errors: r.check?.errors ?? 0 });
       app.bumpRefresh();
       app.toast(`${r.imported} listings imported`, r.check ? `${r.check.checked} checked · ${r.check.changed} not live` : 'Checks will run on the next schedule.');
     } catch (err) {
@@ -720,18 +699,9 @@ export default function ImportPage() {
         <div className="card card-pad" style={{ padding: 20 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 10 }}>
             <div className="stat-box" style={{ borderColor: 'var(--okBd)', background: 'var(--okBg)' }}><div className="tnum" style={{ fontSize: 23, fontWeight: 800, color: 'var(--ok)' }}>{validated.valid.length}</div><div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ok)' }}>Ready to import</div></div>
-            <div className="stat-box" style={{ borderColor: 'var(--warnBd)', background: 'var(--warnBg)' }}><div className="tnum" style={{ fontSize: 23, fontWeight: 800, color: 'var(--warn)' }}>{validated.dups}</div><div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warn)' }}>Duplicates in file · skipped</div></div>
             <div className="stat-box" style={{ borderColor: 'var(--badBd)', background: 'var(--badBg)' }}><div className="tnum" style={{ fontSize: 23, fontWeight: 800, color: 'var(--bad)' }}>{validated.skipped.length}</div><div style={{ fontSize: 12, fontWeight: 700, color: 'var(--bad)' }}>Without a match · skipped</div></div>
           </div>
 
-          {dupPhoneRows.size > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14, padding: '10px 12px', border: '1px solid var(--warnBd)', background: 'var(--warnBg)', borderRadius: 10 }}>
-              <Icon d={IC.alert} size={14} color="var(--warn)" />
-              <div style={{ fontSize: 12.5, color: 'var(--warn)', fontWeight: 600 }}>
-                {dupPhoneRows.size} rows share a phone number with another row. They are still imported — check them under Businesses afterwards if they are the same business twice.
-              </div>
-            </div>
-          ) : null}
           <div style={{ fontSize: 13, fontWeight: 700, marginTop: 18 }}>What will be imported</div>
           <div style={{ overflowX: 'auto', marginTop: 8, border: '1px solid var(--border)', borderRadius: 10, maxHeight: 320, overflowY: 'auto' }}>
             <div style={{ minWidth: 640 }}>
@@ -742,10 +712,10 @@ export default function ImportPage() {
                 <span>City</span>
               </div>
               {validated.valid.slice(0, 300).map((v) => (
-                <div key={v.row} style={{ display: 'grid', gridTemplateColumns: '2fr 2.2fr 1.4fr 1fr', gap: 10, padding: '8px 12px', borderBottom: '1px solid var(--border)', fontSize: 12, background: dupPhoneRows.has(v.row) ? 'var(--warnBg)' : undefined }}>
+                <div key={v.row} style={{ display: 'grid', gridTemplateColumns: '2fr 2.2fr 1.4fr 1fr', gap: 10, padding: '8px 12px', borderBottom: '1px solid var(--border)', fontSize: 12,}}>
                   <span className="ell" style={{ fontWeight: 600 }}>{v.name}</span>
                   <span className="ell mono" style={{ color: 'var(--muted)', fontSize: 11 }}>{v.placeId}</span>
-                  <span className="ell" style={{ color: dupPhoneRows.has(v.row) ? 'var(--warn)' : 'var(--muted)', fontWeight: dupPhoneRows.has(v.row) ? 700 : 400 }} title={dupPhoneRows.has(v.row) ? 'This phone number appears on more than one row' : undefined}>{v.phone ?? ''}</span>
+                  <span className="ell" style={{ color: 'var(--muted)' }}>{v.phone ?? ''}</span>
                   <span className="ell" style={{ color: 'var(--muted)' }}>{v.city ?? ''}</span>
                 </div>
               ))}
@@ -802,7 +772,7 @@ export default function ImportPage() {
               </span>
               <div style={{ fontSize: 17, fontWeight: 800, marginTop: 14 }}>{result.imported} listings imported</div>
               <div style={{ fontSize: 12.5, color: 'var(--muted)', marginTop: 4 }}>
-                {result.duplicates} duplicates skipped · {result.invalid} rows skipped
+                {result.invalid} rows skipped
                 {checkNow ? ` · first check done: ${result.changed} not live${result.errors ? `, ${result.errors} check errors` : ''}` : ' · first check runs on the next schedule'}
               </div>
               <div style={{ display: 'flex', gap: 9, marginTop: 18, flexWrap: 'wrap', justifyContent: 'center' }}>

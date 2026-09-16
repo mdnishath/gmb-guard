@@ -271,12 +271,6 @@ export interface EnrichResult {
   errors: string[];
 }
 
-export interface DuplicateGroup {
-  phone: string;
-  count: number;
-  listings: Array<{ id: string; name: string; phone: string; city: string | null; currentStatus: ListingStatus }>;
-}
-
 export interface ListingListParams {
   page?: number;
   pageSize?: number;
@@ -357,7 +351,7 @@ export const api = {
     checkAll: () => request<CheckSummary>('/api/listings/manual-check', { method: 'POST', body: JSON.stringify({ all: true }) }),
     stats: () => request<Stats>('/api/listings/stats'),
     import: (rows: ListingInput[], checkImmediately = true) =>
-      request<{ received: number; imported: number; duplicates: number; invalid: Array<{ row: number; errors: string[] }>; check: CheckSummary | null; listings: Listing[] }>(
+      request<{ received: number; imported: number; invalid: Array<{ row: number; errors: string[] }>; check: CheckSummary | null; listings: Listing[] }>(
         '/api/listings/import',
         { method: 'POST', body: JSON.stringify({ rows, checkImmediately }) },
       ),
@@ -375,8 +369,6 @@ export const api = {
       limit?: number;
       cursor?: string;
     } = {}) => request<EnrichResult>('/api/listings/enrich', { method: 'POST', body: JSON.stringify(body) }),
-    /** Listings that share a phone number. */
-    duplicates: () => request<{ groups: DuplicateGroup[]; totalGroups: number; totalListings: number }>('/api/listings/duplicates'),
     /** Find Place IDs on Google for up to 15 rows per call. */
     resolve: (rows: ResolveInput[], mode: 'auto' | 'free' = 'auto') =>
       request<{ results: ResolveResult[]; mode: 'auto' | 'free' }>('/api/listings/resolve', { method: 'POST', body: JSON.stringify({ rows, mode }) }),
